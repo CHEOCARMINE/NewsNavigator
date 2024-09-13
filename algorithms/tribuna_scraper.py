@@ -16,7 +16,7 @@ sentiment_analyzer = pipeline('sentiment-analysis', model='distilbert-base-uncas
 locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')
 
 # Establecer la fecha objetivo para filtrar las noticias
-target_date = datetime.strptime("11 de septiembre de 2024", "%d de %B de %Y")
+target_date = datetime.strptime("12 de septiembre de 2024", "%d de %B de %Y")
 
 # Función para truncar descripciones largas al límite que soporta el modelo de transformers
 def truncate_description(description):
