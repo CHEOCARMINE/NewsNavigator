@@ -159,7 +159,7 @@ def detect_keywords(description, keywords):
 # Función para clasificar la relevancia de las noticias
 def classify_data(data):
     print("Clasificando la relevancia de las noticias...")
-    keywords = ['huelga', 'catástrofe', 'manifestación', 'protesta', 'clima', 'desastre']
+    keywords = ['marcha', 'protesta', 'bloqueo carretero', 'cierre de vialidad', 'bloqueo a inmueble', 'aeropuerto bloqueado', 'caseta de peaje bloqueada', 'vía férrea bloqueada', 'ataque a autoridad', 'ataque a actor público', 'ataque a policía', 'ataque a activista', 'proceso electoral interrumpido', 'demanda de apoyo', 'inconformidad con normatividad', 'desastre natural', 'afectación gubernamental', 'protesta social', 'huelga del magisterio', 'universidad en paro', 'bloqueo en aeropuerto', 'manifestación masiva', 'interrupción de servicio público', 'movilización social', 'paralización de actividades', 'asamblea pública', 'contingencia gubernamental', 'sindicato en protesta', 'denuncia contra gobierno', 'resistencia civil', 'queja contra autoridades', 'marchas', 'bloqueos carreteros', 'bloqueos en vialidades', 'bloqueos a inmuebles', 'aeropuertos', 'casetas de peaje', 'vías férreas', 'ataques a actores públicos', 'ataques a policías', 'ataques a activistas', 'autoridades', 'proceso electoral', 'demanda de apoyo', 'inconformidad con normatividad gubernamental', 'desastres naturales', 'magisterio', 'protestas sociales', 'universidades']#poner las palabras de las noticias para su filtro
     
     classified_data = []
     for item in data:
