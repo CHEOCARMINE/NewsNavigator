@@ -21,7 +21,7 @@ sentiment_analyzer = pipeline('sentiment-analysis', model='distilbert-base-uncas
 locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')
 
 # Establecer la fecha objetivo para filtrar las noticias
-target_date = datetime.strptime("20 de septiembre de 2024", "%d de %B de %Y")
+target_date = datetime.strptime("19 de septiembre de 2024", "%d de %B de %Y")
 
 # Función para truncar descripciones largas al límite que soporta el modelo de transformers
 def truncate_description(description):
@@ -55,9 +55,7 @@ def extract_data(existing_titles):
         "https://tribunacampeche.com/category/expediente/page/2/",
         "https://tribunacampeche.com/category/policia/",
         "https://tribunacampeche.com/category/policia/page/2/",
-        "https://tribunacampeche.com/date/2024/",
-        "https://tribunacampeche.com/date/2024/page/2/",
-        "https://tribunacampeche.com/date/2024/page/3/"
+        "https://tribunacampeche.com/date/2024/"
     ]
 
     headers = {
