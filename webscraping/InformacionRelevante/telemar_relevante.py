@@ -20,8 +20,9 @@ sentiment_analyzer = pipeline('sentiment-analysis', model='distilbert-base-uncas
 # Configurar locale para manejar fechas en español
 locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')
 
-# Establecer la fecha objetivo para filtrar las noticias
-target_date = datetime.strptime("19 de septiembre de 2024", "%d de %B de %Y")
+# Establecer la fecha objetivo para filtrar las noticias`
+date = "27 septiembre, 2024"
+target_date = datetime.strptime(date, "%d %B, %Y")
 
 # Función para truncar descripciones largas al límite que soporta el modelo de transformers
 def truncate_description(description):
@@ -43,19 +44,14 @@ def extract_data(existing_titles):
 
     all_data = []
     urls = [
-        "https://tribunacampeche.com/category/local/",
-        "https://tribunacampeche.com/category/local/page/2/",
-        "https://tribunacampeche.com/category/local/page/3/",
-        "https://tribunacampeche.com/category/municipios/",
-        "https://tribunacampeche.com/category/municipios/page/2/",
-        "https://tribunacampeche.com/category/municipios/page/3/",
-        "https://tribunacampeche.com/category/carmen/",
-        "https://tribunacampeche.com/category/carmen/page/2/",
-        "https://tribunacampeche.com/category/expediente/",
-        "https://tribunacampeche.com/category/expediente/page/2/",
-        "https://tribunacampeche.com/category/policia/",
-        "https://tribunacampeche.com/category/policia/page/2/",
-        "https://tribunacampeche.com/date/2024/"
+        "https://telemarcampeche.com/category/locales/",
+        "https://telemarcampeche.com/category/locales/page/2/"
+        "https://telemarcampeche.com/category/locales/page/3/",
+        "https://telemarcampeche.com/category/municipales/",
+        "https://telemarcampeche.com/category/municipales/page/2/",
+        "https://telemarcampeche.com/category/municipales/page/3/",
+        "https://telemarcampeche.com/category/expediente/",
+        "https://telemarcampeche.com/category/expediente/page/2/"	
     ]
 
     headers = {
@@ -72,17 +68,17 @@ def extract_data(existing_titles):
             soup = BeautifulSoup(response.text, 'html.parser')
             
             # Buscar el contenedor específico de las noticias
-            container = soup.find('div', class_='af-container-row aft-archive-wrapper clearfix archive-layout-list')
+            container = soup.find('div', class_="cm-posts cm-layout-2 cm-layout-2-style-1 col-2")
             if not container:
                 print(f"No se encontró el contenedor principal en {url}")
                 continue
 
             # Buscar las noticias dentro del contenedor
-            articles = container.find_all('div', class_='read-details')
+            articles = container.find_all('article')
 
             for article in articles:
-                title_div = article.find('div', class_='read-title')
-                title = title_div.find('h4').text.strip() if title_div else "No title found"
+                title_div = article.find('h2', class_='cm-entry-title')
+                title = title_div.find('a').text.strip() if title_div else "No title found"
                 
                 # Filtrar si el título ya existe para evitar duplicados
                 if title in existing_titles:
@@ -92,12 +88,12 @@ def extract_data(existing_titles):
                 existing_titles.add(title)
 
                 # Extraer la fecha de la noticia
-                date_span = article.find('span', class_='item-metadata posts-date')
-                date = date_span.text.strip() if date_span else "No date found"
+                date_span = article.find('time', class_='entry-date')
+                date = date_span.text.strip() if date_span else "No date found" 
 
                 # Convertir la fecha extraída a un objeto datetime
                 try:
-                    article_date = datetime.strptime(date, "%d de %B de %Y")
+                    article_date = datetime.strptime(date, "%d %B, %Y")
                 except ValueError:
                     print(f"Formato de fecha no reconocido: {date}")
                     continue
@@ -108,7 +104,7 @@ def extract_data(existing_titles):
                     continue
 
                 # Extraer el enlace de la noticia
-                link_div = article.find('div', class_='read-title')
+                link_div = article.find('h2', class_='cm-entry-title')
                 link = link_div.find('a').get('href') if link_div else "No link found"
 
                 # Extraer la descripción completa de la noticia visitando el enlace
@@ -116,7 +112,7 @@ def extract_data(existing_titles):
                     link_response = requests.get(link, headers=headers)
                     link_response.raise_for_status()
                     link_soup = BeautifulSoup(link_response.text, 'html.parser')
-                    description_div = link_soup.find('div', class_='entry-content')
+                    description_div = link_soup.find('div', class_='cm-entry-summary')
                     description = " ".join([p.text.strip() for p in description_div.find_all('p')]) if description_div else "No description found"
 
                 except requests.exceptions.RequestException as e:
