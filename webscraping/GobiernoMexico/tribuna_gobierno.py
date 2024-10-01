@@ -21,7 +21,7 @@ sentiment_analyzer = pipeline('sentiment-analysis', model='distilbert-base-uncas
 locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')
 
 # Establecer la fecha objetivo para filtrar las noticias
-date= '27 de septiembre de 2024'
+date= "1 de octubre de 2024"
 target_date = datetime.strptime(date, "%d de %B de %Y")
 
 # Función para truncar descripciones largas al límite
@@ -44,21 +44,10 @@ def extract_data(existing_titles):
 
     all_data = []
     urls = [
-        "https://tribunacampeche.com/category/local/",
-        "https://tribunacampeche.com/category/local/page/2/",
-        "https://tribunacampeche.com/category/local/page/3/",
-        "https://tribunacampeche.com/category/municipios/",
-        "https://tribunacampeche.com/category/municipios/page/2/",
-        "https://tribunacampeche.com/category/municipios/page/3/",
-        "https://tribunacampeche.com/category/carmen/",
-        "https://tribunacampeche.com/category/carmen/page/2/",
-        "https://tribunacampeche.com/category/expediente/",
-        "https://tribunacampeche.com/category/expediente/page/2/",
-        "https://tribunacampeche.com/category/policia/",
-        "https://tribunacampeche.com/category/policia/page/2/",
-        "https://tribunacampeche.com/date/2024/",
-        "https://tribunacampeche.com/date/2024/page/2/",
-        "https://tribunacampeche.com/date/2024/page/3/"
+        "https://tribunacampeche.com/category/nacional/",
+        "https://tribunacampeche.com/category/nacional/page/2/",
+        "https://tribunacampeche.com/category/nacional/page/3/"
+        
     ]
 
     headers = {

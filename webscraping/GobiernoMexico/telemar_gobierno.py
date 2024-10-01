@@ -21,7 +21,7 @@ sentiment_analyzer = pipeline('sentiment-analysis', model='distilbert-base-uncas
 locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')
 
 # Establecer la fecha objetivo para filtrar las noticias`
-date = "27 septiembre, 2024"
+date = "1 octubre, 2024"
 target_date = datetime.strptime(date, "%d %B, %Y")
 
 # Función para truncar descripciones largas al límite que soporta el modelo de transformers
@@ -44,14 +44,10 @@ def extract_data(existing_titles):
 
     all_data = []
     urls = [
-        "https://telemarcampeche.com/category/locales/",
-        "https://telemarcampeche.com/category/locales/page/2/"
-        "https://telemarcampeche.com/category/locales/page/3/",
-        "https://telemarcampeche.com/category/municipales/",
-        "https://telemarcampeche.com/category/municipales/page/2/",
-        "https://telemarcampeche.com/category/municipales/page/3/",
-        "https://telemarcampeche.com/category/expediente/",
-        "https://telemarcampeche.com/category/expediente/page/2/"	
+        "https://telemarcampeche.com/category/nacionales/",
+        "https://telemarcampeche.com/category/nacionales/page/2/",
+        "https://telemarcampeche.com/category/nacionales/page/3/"
+        	
     ]
 
     headers = {
