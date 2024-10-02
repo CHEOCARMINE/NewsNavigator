@@ -9,7 +9,7 @@ from datetime import datetime
 import sys
 import io
 
-#Forzar la codificacion de la salida da UTF-8
+#Forzar la salida UTF-8
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
 # Inicialización de las herramientas de NLP
@@ -17,28 +17,28 @@ nltk.download('punkt')
 nlp = spacy.load("en_core_web_sm")
 sentiment_analyzer = pipeline('sentiment-analysis', model='distilbert-base-uncased-finetuned-sst-2-english')
 
-# Configurar locale para manejar fechas en español
+# Configuración de Localización
 locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')
 
-# Establecer la fecha objetivo para filtrar las noticias`
+# Fecha Objetivo
 date = "1 octubre, 2024"
 target_date = datetime.strptime(date, "%d %B, %Y")
 
-# Función para truncar descripciones largas al límite que soporta el modelo de transformers
+# Truncar Descripciones
 def truncate_description(description):
     tokenizer = sentiment_analyzer.tokenizer
     tokens = tokenizer(description, truncation=True, max_length=512, return_tensors="pt")
     truncated_description = tokenizer.decode(tokens['input_ids'][0], skip_special_tokens=True)
     return truncated_description
 
-# Función para resumir el texto de las descripciones
+# Resumir Texto
 def summarize_text(text):
     doc = nlp(text)
     sentences = list(doc.sents)
     summary = " ".join([sent.text for sent in sentences[:2]])
     return summary
 
-# Función para extraer datos de las fuentes de noticias
+# Extraer Datos
 def extract_data(existing_titles):
     print("Extrayendo datos de las fuentes...")
 
@@ -67,20 +67,20 @@ def extract_data(existing_titles):
             response.raise_for_status()
             soup = BeautifulSoup(response.text, 'html.parser')
             
-            # Buscar el contenedor específico de las noticias
+            # Buscar el contenedor de las noticias
             container = soup.find('div', class_="cm-posts cm-layout-2 cm-layout-2-style-1 col-2")
             if not container:
                 print(f"No se encontró el contenedor principal en {url}")
                 continue
 
-            # Buscar las noticias dentro del contenedor
+            # Buscar las noticias
             articles = container.find_all('article')
 
             for article in articles:
                 title_div = article.find('h2', class_='cm-entry-title')
                 title = title_div.find('a').text.strip() if title_div else "No title found"
                 
-                # Filtrar si el título ya existe para evitar duplicados
+                # Filtrar el titulo duplicados
                 if title in existing_titles:
                     print(f"Noticia duplicada encontrada: {title}")
                     continue
@@ -91,7 +91,7 @@ def extract_data(existing_titles):
                 date_span = article.find('time', class_='entry-date')
                 date = date_span.text.strip() if date_span else "No date found" 
 
-                # Convertir la fecha extraída a un objeto datetime
+                # Convertir la fecha a un objeto datetime
                 try:
                     article_date = datetime.strptime(date, "%d %B, %Y")
                 except ValueError:
@@ -107,7 +107,7 @@ def extract_data(existing_titles):
                 link_div = article.find('h2', class_='cm-entry-title')
                 link = link_div.find('a').get('href') if link_div else "No link found"
 
-                # Extraer la descripción completa de la noticia visitando el enlace
+                # Extraer la descripción completa
                 try:
                     link_response = requests.get(link, headers=headers)
                     link_response.raise_for_status()
@@ -124,7 +124,7 @@ def extract_data(existing_titles):
                 print(f"Date: {date}")
                 print(f"Link: {link}")
 
-                # Agregar la noticia a la lista de datos recopilados
+                # Lista de datos recopilados
                 news_item = {
                     'title': title,
                     'description': description,
@@ -133,14 +133,14 @@ def extract_data(existing_titles):
                 }
                 all_data.append(news_item)
             
-            time.sleep(2)  # Esperar 2 segundos entre peticiones para evitar sobrecargar el servidor
+            time.sleep(2)
 
         except requests.exceptions.RequestException as e:
             print(f"Error al extraer datos de la página de noticias {url}: {e}")
 
     return all_data
 
-# Función para preprocesar los datos (e.g., convertir a minúsculas)
+# Preprocesar Datos
 def preprocess_data(data):
     print("Preprocesando los datos...")
     processed_data = []
@@ -154,14 +154,14 @@ def preprocess_data(data):
 
     return processed_data
 
-# Función para detectar palabras clave en las descripciones
+# Detectar Palabras Clave
 def detect_keywords(description, keywords):
     return any(keyword in description for keyword in keywords)
 
-# Función para clasificar la relevancia de las noticias
+# Clasificar Datos
 def classify_data(data):
     print("Clasificando la relevancia de las noticias...")
-    keywords = ['marcha', 'protesta', 'bloqueo carretero', 'cierre de vialidad', 'bloqueo a inmueble', 'aeropuerto bloqueado', 'caseta de peaje bloqueada', 'vía férrea bloqueada', 'ataque a autoridad', 'ataque a actor público', 'ataque a policía', 'ataque a activista', 'proceso electoral interrumpido', 'demanda de apoyo', 'inconformidad con normatividad', 'desastre natural', 'afectación gubernamental', 'protesta social', 'huelga del magisterio', 'universidad en paro', 'bloqueo en aeropuerto', 'manifestación masiva', 'interrupción de servicio público', 'movilización social', 'paralización de actividades', 'asamblea pública', 'contingencia gubernamental', 'sindicato en protesta', 'denuncia contra gobierno', 'resistencia civil', 'queja contra autoridades', 'marchas', 'bloqueos carreteros', 'bloqueos en vialidades', 'bloqueos a inmuebles', 'aeropuertos', 'casetas de peaje', 'vías férreas', 'ataques a actores públicos', 'ataques a policías', 'ataques a activistas', 'autoridades', 'proceso electoral', 'demanda de apoyo', 'inconformidad con normatividad gubernamental', 'desastres naturales', 'magisterio', 'protestas sociales', 'universidades']#poner las palabras de las noticias para su filtro
+    keywords = ['marcha', 'protesta', 'bloqueo carretero', 'cierre de vialidad', 'bloqueo a inmueble', 'aeropuerto bloqueado', 'caseta de peaje bloqueada', 'vía férrea bloqueada', 'ataque a autoridad', 'ataque a actor público', 'ataque a policía', 'ataque a activista', 'proceso electoral interrumpido', 'demanda de apoyo', 'inconformidad con normatividad', 'desastre natural', 'afectación gubernamental', 'protesta social', 'huelga del magisterio', 'universidad en paro', 'bloqueo en aeropuerto', 'manifestación masiva', 'interrupción de servicio público', 'movilización social', 'paralización de actividades', 'asamblea pública', 'contingencia gubernamental', 'sindicato en protesta', 'denuncia contra gobierno', 'resistencia civil', 'queja contra autoridades', 'marchas', 'bloqueos carreteros', 'bloqueos en vialidades', 'bloqueos a inmuebles', 'aeropuertos', 'casetas de peaje', 'vías férreas', 'ataques a actores públicos', 'ataques a policías', 'ataques a activistas', 'autoridades', 'proceso electoral', 'demanda de apoyo', 'inconformidad con normatividad gubernamental', 'desastres naturales', 'magisterio', 'protestas sociales', 'universidades']# Palabras clave
     
     classified_data = []
     for item in data:
@@ -169,7 +169,7 @@ def classify_data(data):
         sentiment = sentiment_analyzer(truncated_description)[0]['label']
         contains_keyword = detect_keywords(item['description'], keywords)
         
-        # Asignar relevancia basado en palabras clave y sentimiento
+        # Asignar relevancia
         if contains_keyword:
             item['relevance'] = 'alta' if sentiment == 'NEGATIVE' else 'media'
         else:
@@ -179,14 +179,14 @@ def classify_data(data):
 
     return classified_data
 
-# Función para agregar un resumen a la descripción de las noticias
+# Resumir Datos
 def summarize_data(data):
     print("Resumiendo las descripciones de las noticias...")
     for item in data:
         item['summary'] = summarize_text(item['description'])
     return data
 
-# Función para presentar los resultados finales
+# Presentar Resultados
 def present_results(data):
     print("Presentando los resultados...")
     for item in data:
@@ -197,7 +197,7 @@ def present_results(data):
         print(f"Importancia: {item['relevance']}".encode('utf-8', errors='ignore').decode('utf-8'))
         print("\n")
 
-# Función principal que controla el flujo del programa
+# Función Principal
 def main():
     existing_titles = set()  # Evitar duplicados
 
