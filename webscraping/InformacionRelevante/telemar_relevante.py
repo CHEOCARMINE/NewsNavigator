@@ -190,6 +190,7 @@ def summarize_data(data):
 def present_results(data):
     print("Presentando los resultados...")
     for item in data:
+        print("\n")
         print(f"Titulo: {item['title']}".encode('utf-8', errors='ignore').decode('utf-8'))
         print(f"Resumen: {item['summary']}".encode('utf-8', errors='ignore').decode('utf-8'))
         print(f"Fecha: {item['date']}".encode('utf-8', errors='ignore').decode('utf-8'))
