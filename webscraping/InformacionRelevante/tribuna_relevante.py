@@ -8,6 +8,7 @@ import locale
 from datetime import datetime
 import sys
 import io
+from webscraping.InformacionRelevante.database import get_db_connection
 
 #Forzar la salida UTF-8
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
@@ -37,6 +38,25 @@ def summarize_text(text):
     sentences = list(doc.sents)
     summary = " ".join([sent.text for sent in sentences[:2]])
     return summary
+
+# Insertar los datos
+def insert_into_db(item):
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    
+    sql = """INSERT INTO seguridad (titulo, resumen, fecha, link, relevancia) 
+             VALUES (%s, %s, %s, %s, %s)"""
+    values = (item['title'], item['summary'], item['date'], item['link'], item['relevance'])
+    
+    try:
+        cursor.execute(sql, values)
+        connection.commit()
+        print(f"Datos insertados: {item['title']}")
+    except Exception as e:
+        print(f"Error al insertar datos: {e}")
+    finally:
+        cursor.close()
+        connection.close()
 
 # Extraer Datos
 def extract_data(existing_titles):
@@ -198,12 +218,13 @@ def present_results(data):
     print("Presentando los resultados...")
     for item in data:
         print("\n")
-        print(f"Titulo: {item['title']}".encode('utf-8', errors='ignore').decode('utf-8'))
-        print(f"Resumen: {item['summary']}".encode('utf-8', errors='ignore').decode('utf-8'))
-        print(f"Fecha: {item['date']}".encode('utf-8', errors='ignore').decode('utf-8'))
-        print(f"Link: {item['link']}".encode('utf-8', errors='ignore').decode('utf-8'))
-        print(f"Importancia: {item['relevance']}".encode('utf-8', errors='ignore').decode('utf-8'))
-        print("\n")
+        print(f"Titulo: {item['title']}")
+        print(f"Resumen: {item['summary']}")
+        print(f"Fecha: {item['date']}")
+        print(f"Link: {item['link']}")
+        print(f"Importancia: {item['relevance']}")
+
+        insert_into_db(item)
 
 # Función Principal
 def main():
