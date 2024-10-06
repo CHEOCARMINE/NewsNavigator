@@ -8,7 +8,8 @@ import locale
 from datetime import datetime
 import sys
 import io
-from webscraping.InformacionRelevante.database import get_db_connection
+sys.path.append('C:/Users/cheo_/LABS/NewsNav')
+from database import get_db_connection
 
 #Forzar la salida UTF-8
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
@@ -44,7 +45,7 @@ def insert_into_db(item):
     connection = get_db_connection()
     cursor = connection.cursor()
     
-    sql = """INSERT INTO seguridad (titulo, resumen, fecha, link, relevancia) 
+    sql = """INSERT INTO informacion_relevante (titulo, resumen, fecha, link, relevancia) 
              VALUES (%s, %s, %s, %s, %s)"""
     values = (item['title'], item['summary'], item['date'], item['link'], item['relevance'])
     
@@ -125,6 +126,8 @@ def extract_data(existing_titles):
                     print(f"Formato de fecha no reconocido: {date}")
                     continue
 
+                formatted_date = article_date.strftime("%Y-%m-%d")
+
                 # Filtrar noticias según la fecha objetivo
                 if article_date != target_date:
                     print(f"Noticia fuera de la fecha objetivo: {title} - {date}")
@@ -148,14 +151,14 @@ def extract_data(existing_titles):
                 # Imprimir detalles de la noticia
                 print(f"Title: {title}")
                 print(f"Description: {description}")
-                print(f"Date: {date}")
+                print(f"Date: {formatted_date}")
                 print(f"Link: {link}")
 
                 # Lista de datos recopilados
                 news_item = {
                     'title': title,
                     'description': description,
-                    'date': date,
+                    'date': formatted_date,
                     'link': link
                 }
                 all_data.append(news_item)
