@@ -8,6 +8,8 @@ import locale
 from datetime import datetime
 import sys
 import io
+sys.path.append('C:/Users/cheo_/LABS/NewsNav')
+from database import get_db_connection
 
 #Forzar la salida UTF-8
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
@@ -37,6 +39,25 @@ def summarize_text(text):
     sentences = list(doc.sents)
     summary = " ".join([sent.text for sent in sentences[:2]])
     return summary
+
+# Insertar los datos
+def insert_into_db(item):
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    
+    sql = """INSERT INTO seguridad (titulo, resumen, fecha, link, relevancia) 
+             VALUES (%s, %s, %s, %s, %s)"""
+    values = (item['title'], item['summary'], item['date'], item['link'], item['relevance'])
+    
+    try:
+        cursor.execute(sql, values)
+        connection.commit()
+        print(f"Datos insertados: {item['title']}")
+    except Exception as e:
+        print(f"Error al insertar datos: {e}")
+    finally:
+        cursor.close()
+        connection.close()
 
 # Extraer Datos
 def extract_data(existing_titles):
@@ -105,6 +126,8 @@ def extract_data(existing_titles):
                     print(f"Formato de fecha no reconocido: {date}")
                     continue
 
+                formatted_date = article_date.strftime("%Y-%m-%d")
+
                 # Filtrar noticias según la fecha objetivo
                 if article_date != target_date:
                     print(f"Noticia fuera de la fecha objetivo: {title} - {date}")
@@ -128,14 +151,14 @@ def extract_data(existing_titles):
                 # Imprimir detalles de la noticia
                 print(f"Title: {title}")
                 print(f"Description: {description}")
-                print(f"Date: {date}")
+                print(f"Date: {formatted_date}")
                 print(f"Link: {link}")
 
                 # Lista de datos recopilados
                 news_item = {
                     'title': title,
                     'description': description,
-                    'date': date,
+                    'date': formatted_date,
                     'link': link
                 }
                 all_data.append(news_item)
@@ -175,7 +198,8 @@ def classify_data(data):
                 'delitos contra la salud', 'falsificación de documentos', 'fraude', 
                 'delitos financieros', 'delitos ambientales', 'crimen transnacional', 
                 'extorsión', 'homicidio', 'robo de combustible', 'huachicol', 
-                'delitos informáticos', 'hackeo', 'piratería']# Ppalabras clave
+                'delitos informáticos', 'hackeo', 'piratería'
+]# Palabras clave
     
     classified_data = []
     for item in data:
@@ -205,12 +229,13 @@ def present_results(data):
     print("Presentando los resultados...")
     for item in data:
         print("\n")
-        print(f"Titulo: {item['title']}".encode('utf-8', errors='ignore').decode('utf-8'))
-        print(f"Resumen: {item['summary']}".encode('utf-8', errors='ignore').decode('utf-8'))
-        print(f"Fecha: {item['date']}".encode('utf-8', errors='ignore').decode('utf-8'))
-        print(f"Link: {item['link']}".encode('utf-8', errors='ignore').decode('utf-8'))
-        print(f"Importancia: {item['relevance']}".encode('utf-8', errors='ignore').decode('utf-8'))
-        print("\n")
+        print(f"Titulo: {item['title']}")
+        print(f"Resumen: {item['summary']}")
+        print(f"Fecha: {item['date']}")
+        print(f"Link: {item['link']}")
+        print(f"Importancia: {item['relevance']}")
+
+        insert_into_db(item)
 
 # Función Principal
 def main():
