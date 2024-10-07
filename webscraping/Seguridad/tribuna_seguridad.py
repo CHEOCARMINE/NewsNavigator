@@ -228,14 +228,15 @@ def summarize_data(data):
 def present_results(data):
     print("Presentando los resultados...")
     for item in data:
-        print("\n")
-        print(f"Titulo: {item['title']}")
-        print(f"Resumen: {item['summary']}")
-        print(f"Fecha: {item['date']}")
-        print(f"Link: {item['link']}")
-        print(f"Importancia: {item['relevance']}")
+        if item['relevance'] == 'alta':
+            print("\n")
+            print(f"Titulo: {item['title']}")
+            print(f"Resumen: {item['summary']}")
+            print(f"Fecha: {item['date']}")
+            print(f"Link: {item['link']}")
+            print(f"Importancia: {item['relevance']}")
 
-        insert_into_db(item)
+            insert_into_db(item)
 
 # Función Principal
 def main():
