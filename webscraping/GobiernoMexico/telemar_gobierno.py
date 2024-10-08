@@ -46,8 +46,7 @@ def extract_data(existing_titles):
     urls = [
         "https://telemarcampeche.com/category/nacionales/",
         "https://telemarcampeche.com/category/nacionales/page/2/",
-        "https://telemarcampeche.com/category/nacionales/page/3/"
-        	
+        "https://telemarcampeche.com/category/nacionales/page/3/", 	
     ]
 
     headers = {

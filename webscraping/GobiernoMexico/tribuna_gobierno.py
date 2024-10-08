@@ -46,8 +46,7 @@ def extract_data(existing_titles):
     urls = [
         "https://tribunacampeche.com/category/nacional/",
         "https://tribunacampeche.com/category/nacional/page/2/",
-        "https://tribunacampeche.com/category/nacional/page/3/"
-        
+        "https://tribunacampeche.com/category/nacional/page/3/",
     ]
 
     headers = {
