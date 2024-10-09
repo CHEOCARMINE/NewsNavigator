@@ -1,62 +1,45 @@
-from celery import Celery, group
+import sys
+import time
 import importlib
-from dotenv import load_dotenv
+from pathlib import Path
 
-load_dotenv()
+# Añadir directorios de scraping al sys.path
+sys.path.append(str(Path(__file__).resolve().parent / 'webscraping' / 'InformacionRelevante'))
+sys.path.append(str(Path(__file__).resolve().parent / 'webscraping' / 'seguridad'))
+sys.path.append(str(Path(__file__).resolve().parent / 'webscraping' / 'GobiernoMexicano'))
+sys.path.append(str(Path(__file__).resolve().parent / 'webscraping' / 'GenerosOpinion'))
 
-# Configuración de Celery
-app = Celery('news_scraper', broker='CLERY_BROKER')
+# InformacionRelevante
+telemar_main_relevante = importlib.import_module('telemar_relevante').main
+tribuna_main_relevante = importlib.import_module('tribuna_relevante').main
 
-# Configuración para ejecutar los scrapers 
-app.conf.beat_schedule = {
-    'scrape-all-every-10-minutes': {
-        'task': 'manage.run_all_scrapers_in_parallel',
-        'schedule': 600.0,  # 10 minutos
-        'options': {'expires': 600},  # La tarea debe completarse dentro de 10 minutos
-    },
-}
+# Seguridad
+telemar_main_seguridad = importlib.import_module('telemar_seguridad').main
+tribuna_main_seguridad = importlib.import_module('tribuna_seguridad').main
 
-app.conf.timezone = 'UTC'
+# GobiernoMexicano
+telemar_main_gobierno = importlib.import_module('telemar_gobierno').main
+tribuna_main_gobierno = importlib.import_module('tribuna_gobierno').main
 
+# GeneroOpinion
 
-# Tarea principal que ejecuta todos los scrapers en paralelo
-@app.task
-def run_all_scrapers_in_parallel():
-    task_group = group([
-        run_scraper_relevante.s(),
-        run_scraper_seguridad.s(),
-        run_scraper_gobierno.s(),
-        #run_scraper_opinion.s()
-    ])
-    task_group.apply_async()
+def run_scrapers():
+    while True:
+        # Ejecutar scrapers de InformacionRelevante
+        telemar_main_relevante()
+        tribuna_main_relevante()
 
+        # Ejecutar scrapers de Seguridad
+        telemar_main_seguridad()
+        tribuna_main_seguridad()
 
-# Tareas individuales para cada conjunto de scrapers
-@app.task
-def run_scraper_relevante():
-    # Scrapers de información relevante
-    telemar_main_relevante = importlib.import_module('webscraping.InformacionRelevante.telemar_relevante').main
-    tribuna_main_relevante = importlib.import_module('webscraping.InformacionRelevante.tribuna_relevante').main
-    telemar_main_relevante()
-    tribuna_main_relevante()
-@app.task
-def run_scraper_seguridad():
-    # Scrapers de seguridad
-    telemar_main_seguridad = importlib.import_module('webscraping.seguridad.telemar_seguridad').main
-    tribuna_main_seguridad = importlib.import_module('webscraping.seguridad.tribuna_seguridad').main
-    telemar_main_seguridad()
-    tribuna_main_seguridad()
+        # Ejecutar scrapers de GobiernoMexicano
+        telemar_main_gobierno()
+        tribuna_main_gobierno()
 
-@app.task
-def run_scraper_gobierno():
-    # Scrapers de gobierno mexicano
-    telemar_main_gobierno = importlib.import_module('webscraping.GobiernoMexicano.telemar_gobierno').main
-    tribuna_main_gobierno = importlib.import_module('webscraping.GobiernoMexicano.tribuna_gobierno').main
-    telemar_main_gobierno()
-    tribuna_main_gobierno()
+        # Ejecutar scraper de GenerosOpinion
 
-#@app.task
-#def run_scraper_opinion():
-    # Scraper de géneros de opinión
-#    genero_opinion_main = importlib.import_module('webscraping.GenerosOpinion.nombre_del_archivo_de_scraping_opinion').main
-#   genero_opinion_main()
+        time.sleep(600) # 10 minutes
+
+if __name__ == "__main__":
+    run_scrapers()
