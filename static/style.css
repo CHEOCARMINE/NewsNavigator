@@ -1,3 +1,4 @@
+/* Reinicio de estilos y configuración básica */
 * {
     margin: 0;
     padding: 0;
@@ -9,6 +10,26 @@ body {
     background-color: #98989A;
 }
 
+/* Estilos del encabezado */
+.header {
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    padding: 5px; 
+}
+
+h1 {
+    font-size: 2.5rem; 
+    color: #FFFFFF; 
+}
+
+.logo {
+    height: 60px; 
+    width: auto;
+    display: block;
+}
+
+/* Estilos de la barra de navegación */
 .navbar {
     background-color: #9F2241; 
     padding: 1rem;
@@ -17,7 +38,8 @@ body {
 .nav-list {
     list-style: none;
     display: flex;
-    justify-content: space-around;
+    justify-content: center; 
+    flex-wrap: wrap; 
 }
 
 .nav-list li {
@@ -27,11 +49,24 @@ body {
 .nav-list a {
     text-decoration: none;
     color: #ffffff;
-    font-size: 18px;
+    font-size: 1.2rem; 
     font-weight: bold;
 }
 
 .nav-list a:hover {
     color: #BC955C; 
     transition: color 0.3s ease;
+}
+
+/* Media Query para pantallas pequeñas */
+@media (max-width: 600px) {
+    .nav-list {
+        flex-direction: column; 
+        align-items: center; 
+    }
+    
+    .nav-list a {
+        font-size: 1rem; 
+        margin: 5px 0; 
+    }
 }
