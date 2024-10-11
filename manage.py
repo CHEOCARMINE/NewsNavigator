@@ -1,9 +1,131 @@
 from celery import Celery
 from celery import current_app as celery_app  
 from dotenv import load_dotenv
+from flask import Flask, jsonify, render_template
+from database import get_db_connection
 
-load_dotenv()  # Carga las variables de entorno del archivo .env
+load_dotenv()
+
+# Configuración de Flask
+app = Flask(__name__)
+
+# Mostrando los datos de la tabla "informacion_relevante"
+@app.route('/')
+def index():
+    return render_template('index.html')  # Solo renderiza el HTML, sin pasar datos
+
+# Ruta para la tabla "genero_opinion"
+@app.route('/genero_opinion')
+def genero_opinion():
+    return render_template('genero_opinion.html')  # Solo renderiza el HTML, sin pasar datos
+
+# Ruta para la tabla "gobierno_mexicano"
+@app.route('/gobierno_mexico')
+def gobierno_mexicano():
+    return render_template('gobierno_mexico.html')  # Solo renderiza el HTML, sin pasar datos
+
+# Ruta para la tabla "seguridad"
+@app.route('/seguridad')
+def seguridad():
+    return render_template('seguridad.html')  # Solo renderiza el HTML, sin pasar datos
+
+# Ruta para obtener los datos de "informacion_relevante" en formato JSON 
+@app.route('/api/data', methods=['GET'])
+def get_data():
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    
+    # Consulta SQL para la tabla "informacion_relevante"
+    cursor.execute('SELECT titulo, resumen, fecha, link FROM informacion_relevante ORDER BY fecha DESC')
+    data = cursor.fetchall()
+    
+    response = []
+    for row in data:
+        item = {
+            'titulo': row[0],
+            'descripcion': row[1],
+            'fecha': row[2],
+            'link': row[3]
+        }
+        response.append(item)
+    
+    connection.close()
+    return jsonify(response)
+
+# Ruta para obtener los datos de "genero_opinion" en formato JSON
+@app.route('/api/genero_opinion', methods=['GET'])
+def get_genero_opinion():
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    
+    # Consulta SQL para la tabla "genero_opinion"
+    cursor.execute('SELECT titulo, resumen, fecha, link FROM genero_opinion ORDER BY fecha DESC')
+    data = cursor.fetchall()
+    
+    response = []
+    for row in data:
+        item = {
+            'titulo': row[0],
+            'descripcion': row[1],
+            'fecha': row[2],
+            'link': row[3]
+        }
+        response.append(item)
+    
+    connection.close()
+    return jsonify(response)
+
+# Ruta para obtener los datos de "gobierno_mexicano" en formato JSON
+@app.route('/api/gobierno_mexicano', methods=['GET'])
+def get_gobierno_mexicano():
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    
+    # Consulta SQL para la tabla "gobierno_mexicano"
+    cursor.execute('SELECT titulo, resumen, fecha, link FROM gobierno_mexicano ORDER BY fecha DESC')
+    data = cursor.fetchall()
+    
+    response = []
+    for row in data:
+        item = {
+            'titulo': row[0],
+            'descripcion': row[1],
+            'fecha': row[2],
+            'link': row[3]
+        }
+        response.append(item)
+    
+    connection.close()
+    return jsonify(response)
+
+# Ruta para obtener los datos de "seguridad" en formato JSON
+@app.route('/api/seguridad', methods=['GET'])
+def get_seguridad():
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    
+    # Consulta SQL para la tabla "seguridad"
+    cursor.execute('SELECT titulo, resumen, fecha, link FROM seguridad ORDER BY fecha DESC')
+    data = cursor.fetchall()
+    
+    response = []
+    for row in data:
+        item = {
+            'titulo': row[0],
+            'descripcion': row[1],
+            'fecha': row[2],
+            'link': row[3]
+        }
+        response.append(item)
+    
+    connection.close()
+    return jsonify(response)
+
+# Inicializar Celery
+def make_celery(app_name=__name__):
+    return Celery(app_name)
+
+celery = make_celery()
 
 if __name__ == '__main__':
-    # Aquí puedes añadir lógica si es necesario
-    pass
+    app.run(debug=True)
