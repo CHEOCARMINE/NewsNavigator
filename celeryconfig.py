@@ -26,7 +26,7 @@ def run_all_scrapers_in_parallel():
         run_scraper_relevante.s(),
         run_scraper_seguridad.s(),
         run_scraper_gobierno.s(),
-        #run_scraper_opinion.s()
+        run_scraper_opinion.s()
     ])
     task_group.apply_async()
 
@@ -55,8 +55,8 @@ def run_scraper_gobierno():
     telemar_main_gobierno()
     tribuna_main_gobierno()
 
-#@app.task
-#def run_scraper_opinion():
-    # Scraper de géneros de opinión
-#    genero_opinion_main = importlib.import_module('webscraping.GenerosOpinion.nombre_del_archivo_de_scraping_opinion').main
-#   genero_opinion_main()
+@app.task
+def run_scraper_opinion():
+    #Scraper de géneros de opinión
+    genero_opinion_main = importlib.import_module('webscraping.GenerosOpinion.nombre_del_archivo_de_scraping_opinion').main
+    genero_opinion_main()

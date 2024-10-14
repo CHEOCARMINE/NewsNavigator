@@ -19,14 +19,22 @@ body {
 }
 
 h1 {
-    font-size: 2.5rem; 
-    color: #FFFFFF; 
+    font-size: 2.5rem;  
 }
 
 .logo {
     height: 60px; 
     width: auto;
     display: block;
+}
+
+.title-newsnavigators {
+    color:#BC955C;
+}
+
+.title-noticias {
+    color:#98989A;
+    text-align: center;
 }
 
 /* Estilos de la barra de navegación */
@@ -69,4 +77,42 @@ h1 {
         font-size: 1rem; 
         margin: 5px 0; 
     }
+}
+
+/* Estilos generales de la tabla */
+#news-table {
+    width: 100%; 
+    border-collapse: collapse; 
+    margin-top: 20px; 
+    text-align: left; 
+}
+
+/* Estilos para los encabezados de la tabla */
+#news-table th {
+    background-color: #621132; 
+    color: #ffffff; 
+    padding: 10px; 
+    border-bottom: 2px solid #ffffff; 
+}
+
+/* Estilos para las celdas de la tabla */
+#news-table td {
+    padding: 10px; 
+    border-bottom: 1px solid #ddd; 
+    color: #333333; 
+}
+
+/* Estilo alternativo para filas */
+#news-table tr:nth-child(even) {
+    background-color: #98989A; 
+}
+
+/* Estilo para los enlaces en la tabla */
+#news-table a {
+    color: #3498DB; 
+    text-decoration: none; 
+}
+
+#news-table a:hover {
+    text-decoration: underline; 
 }
