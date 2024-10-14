@@ -3,26 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="/static/style.css">
-    <script src="/static/script.js"></script>
-    <title>NewsNavs</title>  
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='script.js') }}" defer></script> 
+    <title>Noticias Relevantes</title>  
 </head>
 <body>
-    
     <header class="header">
         <h1>NewsNavigators</h1>
-        <img src="/images/EscudoCampeche.png" alt="Escudo de Campeche" class="logo">
+        <img src="{{ url_for('static', filename='images/LogoGobernación.png') }}" alt="Escudo de Campeche" class="logo">
     </header>
     
     <nav class="navbar">
         <ul class="nav-list">
-            <li><a href="/templates/index.html">INFORMACIÓN RELEVANTE</a></li>
-            <li><a href="/templates/seguridad.html">SEGURIDAD</a></li>
-            <li><a href="/templates/gobierno_mexico.html">GOBIERNO DE MÉXICO</a></li>
-            <li><a href="/templates/genero_opinion.html">GÉNEROS DE OPINIÓN</a></li>
+            <li><a href="{{ url_for('index') }}">INFORMACIÓN RELEVANTE</a></li>
+            <li><a href="{{ url_for('seguridad') }}">SEGURIDAD</a></li>
+            <li><a href="{{ url_for('gobierno_mexico') }}">GOBIERNO DE MÉXICO</a></li>
+            <li><a href="{{ url_for('genero_opinion') }}">GÉNEROS DE OPINIÓN</a></li>
         </ul>
     </nav>
+    
     <div class="container">
+        <h1>Seguridad</h1>
+        <table id="news-table">
+            <thead>
+                <tr>
+                    <th>Título</th>
+                    <th>Resumen</th>
+                    <th>Fecha</th>
+                    <th>Link</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Los datos se cargarán aquí -->
+            </tbody>
+        </table>
+    </div>
         
 </body>
 </html>

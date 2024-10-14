@@ -12,22 +12,22 @@ app = Flask(__name__)
 # Mostrando los datos de la tabla "informacion_relevante"
 @app.route('/')
 def index():
-    return render_template('index.html')  # Solo renderiza el HTML, sin pasar datos
+    return render_template('index.html')  
 
 # Ruta para la tabla "genero_opinion"
 @app.route('/genero_opinion')
 def genero_opinion():
-    return render_template('genero_opinion.html')  # Solo renderiza el HTML, sin pasar datos
+    return render_template('genero_opinion.html')  
 
-# Ruta para la tabla "gobierno_mexicano"
+# Ruta para la tabla "gobierno_mexico"
 @app.route('/gobierno_mexico')
-def gobierno_mexicano():
-    return render_template('gobierno_mexico.html')  # Solo renderiza el HTML, sin pasar datos
+def gobierno_mexico():
+    return render_template('gobierno_mexico.html')  
 
 # Ruta para la tabla "seguridad"
 @app.route('/seguridad')
 def seguridad():
-    return render_template('seguridad.html')  # Solo renderiza el HTML, sin pasar datos
+    return render_template('seguridad.html')  
 
 # Ruta para obtener los datos de "informacion_relevante" en formato JSON 
 @app.route('/api/data', methods=['GET'])
@@ -75,14 +75,14 @@ def get_genero_opinion():
     connection.close()
     return jsonify(response)
 
-# Ruta para obtener los datos de "gobierno_mexicano" en formato JSON
-@app.route('/api/gobierno_mexicano', methods=['GET'])
-def get_gobierno_mexicano():
+# Ruta para obtener los datos de "gobierno_mexico" en formato JSON
+@app.route('/api/gobierno_mexico', methods=['GET'])
+def get_gobierno_mexico():
     connection = get_db_connection()
     cursor = connection.cursor()
     
-    # Consulta SQL para la tabla "gobierno_mexicano"
-    cursor.execute('SELECT titulo, resumen, fecha, link FROM gobierno_mexicano ORDER BY fecha DESC')
+    # Consulta SQL para la tabla "gobierno_mexico"
+    cursor.execute('SELECT titulo, resumen, fecha, link FROM gobierno_mexico ORDER BY fecha DESC')
     data = cursor.fetchall()
     
     response = []

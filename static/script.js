@@ -1,5 +1,19 @@
 function fetchData() {
-    fetch('/api/data')
+    let apiUrl;
+
+    // Detectar en qué página estás usando 
+    if (window.location.pathname === '/seguridad') {
+        apiUrl = '/api/seguridad';
+    } else if (window.location.pathname === '/genero_opinion') {
+        apiUrl = '/api/genero_opinion';
+    } else if (window.location.pathname === '/gobierno_mexico') {
+        apiUrl = '/api/gobierno_mexico';
+    } else {
+        apiUrl = '/api/data';  
+    }
+
+    // Hacer la petición fetch a la API correspondiente
+    fetch(apiUrl)
         .then(response => response.json())
         .then(data => {
             const tableBody = document.querySelector('#news-table tbody');
