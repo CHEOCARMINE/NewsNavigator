@@ -1,7 +1,7 @@
 from celery import Celery
 from celery import current_app as celery_app  
 from dotenv import load_dotenv
-from flask import Flask, jsonify, render_template
+from flask import Flask, jsonify, render_template, request
 from database import get_db_connection
 
 load_dotenv()
@@ -29,14 +29,27 @@ def gobierno_mexico():
 def seguridad():
     return render_template('seguridad.html')  
 
-# Ruta para obtener los datos de "informacion_relevante" en formato JSON 
+# Ruta para obtener los datos de "informacion_relevante" en formato JSON con filtrado por fecha
 @app.route('/api/data', methods=['GET'])
 def get_data():
     connection = get_db_connection()
     cursor = connection.cursor()
     
-    # Consulta SQL para la tabla "informacion_relevante"
-    cursor.execute('SELECT titulo, resumen, fecha, link FROM informacion_relevante ORDER BY fecha DESC')
+    # Obtener los parámetros de fecha de la solicitud
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+    
+    # Consulta SQL con filtrado por fecha
+    query = 'SELECT titulo, resumen, fecha, link FROM informacion_relevante WHERE 1=1'
+    
+    if start_date:
+        query += f" AND fecha >= '{start_date}'"
+    if end_date:
+        query += f" AND fecha <= '{end_date}'"
+    
+    query += ' ORDER BY fecha DESC'
+    
+    cursor.execute(query)
     data = cursor.fetchall()
     
     response = []
@@ -52,16 +65,27 @@ def get_data():
     connection.close()
     return jsonify(response)
 
-# Ruta para obtener los datos de "genero_opinion" en formato JSON
+# Ruta para obtener los datos de "genero_opinion" en formato JSON con filtrado por fecha
 @app.route('/api/genero_opinion', methods=['GET'])
 def get_genero_opinion():
     connection = get_db_connection()
     cursor = connection.cursor()
+
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+
+    query = 'SELECT titulo, resumen, fecha, link FROM genero_opinion WHERE 1=1'
     
-    # Consulta SQL para la tabla "genero_opinion"
-    cursor.execute('SELECT titulo, resumen, fecha, link FROM genero_opinion ORDER BY fecha DESC')
+    if start_date:
+        query += f" AND fecha >= '{start_date}'"
+    if end_date:
+        query += f" AND fecha <= '{end_date}'"
+
+    query += ' ORDER BY fecha DESC'
+
+    cursor.execute(query)
     data = cursor.fetchall()
-    
+
     response = []
     for row in data:
         item = {
@@ -75,16 +99,27 @@ def get_genero_opinion():
     connection.close()
     return jsonify(response)
 
-# Ruta para obtener los datos de "gobierno_mexico" en formato JSON
+# Ruta para obtener los datos de "gobierno_mexico" en formato JSON con filtrado por fecha
 @app.route('/api/gobierno_mexico', methods=['GET'])
 def get_gobierno_mexico():
     connection = get_db_connection()
     cursor = connection.cursor()
+
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+
+    query = 'SELECT titulo, resumen, fecha, link FROM gobierno_mexico WHERE 1=1'
     
-    # Consulta SQL para la tabla "gobierno_mexico"
-    cursor.execute('SELECT titulo, resumen, fecha, link FROM gobierno_mexico ORDER BY fecha DESC')
+    if start_date:
+        query += f" AND fecha >= '{start_date}'"
+    if end_date:
+        query += f" AND fecha <= '{end_date}'"
+
+    query += ' ORDER BY fecha DESC'
+
+    cursor.execute(query)
     data = cursor.fetchall()
-    
+
     response = []
     for row in data:
         item = {
@@ -98,16 +133,27 @@ def get_gobierno_mexico():
     connection.close()
     return jsonify(response)
 
-# Ruta para obtener los datos de "seguridad" en formato JSON
+# Ruta para obtener los datos de "seguridad" en formato JSON con filtrado por fecha
 @app.route('/api/seguridad', methods=['GET'])
 def get_seguridad():
     connection = get_db_connection()
     cursor = connection.cursor()
+
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+
+    query = 'SELECT titulo, resumen, fecha, link FROM seguridad WHERE 1=1'
     
-    # Consulta SQL para la tabla "seguridad"
-    cursor.execute('SELECT titulo, resumen, fecha, link FROM seguridad ORDER BY fecha DESC')
+    if start_date:
+        query += f" AND fecha >= '{start_date}'"
+    if end_date:
+        query += f" AND fecha <= '{end_date}'"
+
+    query += ' ORDER BY fecha DESC'
+
+    cursor.execute(query)
     data = cursor.fetchall()
-    
+
     response = []
     for row in data:
         item = {

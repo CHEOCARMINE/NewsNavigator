@@ -1,15 +1,24 @@
-function fetchData() {
+document.getElementById('filter-form').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    const startDate = document.getElementById('start-date').value;
+    const endDate = document.getElementById('end-date').value;
+
+    fetchData(startDate, endDate);
+});
+
+function fetchData(startDate = '', endDate = '') {
     let apiUrl;
 
     // Detectar en qué página estás usando 
     if (window.location.pathname === '/seguridad') {
-        apiUrl = '/api/seguridad';
+        apiUrl = `/api/seguridad?start_date=${startDate}&end_date=${endDate}`;
     } else if (window.location.pathname === '/genero_opinion') {
-        apiUrl = '/api/genero_opinion';
+        apiUrl = `/api/genero_opinion?start_date=${startDate}&end_date=${endDate}`;
     } else if (window.location.pathname === '/gobierno_mexico') {
-        apiUrl = '/api/gobierno_mexico';
+        apiUrl = `/api/gobierno_mexico?start_date=${startDate}&end_date=${endDate}`;
     } else {
-        apiUrl = '/api/data';  
+        apiUrl = `/api/data?start_date=${startDate}&end_date=${endDate}`;  
     }
 
     // Hacer la petición fetch a la API correspondiente
@@ -50,6 +59,3 @@ function fetchData() {
 
 // Cargar datos inicialmente
 fetchData();
-
-// Actualizar datos cada 30 segundos
-setInterval(fetchData, 30000);
