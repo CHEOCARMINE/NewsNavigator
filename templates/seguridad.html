@@ -24,6 +24,21 @@
     
     <div class="container">
         <h1 class="title-noticias">Seguridad</h1>
+
+        <!-- Filtro por fecha -->
+        <div class="date-filter">
+            <form id="filter-form">
+                <label for="start-date">Desde:</label>
+                <input type="date" id="start-date" name="start-date">
+                
+                <label for="end-date">Hasta:</label>
+                <input type="date" id="end-date" name="end-date">
+                
+                <button type="submit">Filtrar</button>
+            </form>
+        </div>
+        
+        <!-- Tabla de noticias -->
         <table id="news-table">
             <thead>
                 <tr>
