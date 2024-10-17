@@ -10,7 +10,8 @@ import sys
 import io
 
 # Forzar la salida UTF-8
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+if sys.stdout and not sys.stdout.closed:
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
 # Inicialización de las herramientas de NLP
 nltk.download('punkt')

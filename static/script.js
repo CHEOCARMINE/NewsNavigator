@@ -1,3 +1,4 @@
+// Manejar el envío del formulario de filtrado
 document.getElementById('filter-form').addEventListener('submit', function(event) {
     event.preventDefault();
 
@@ -7,10 +8,11 @@ document.getElementById('filter-form').addEventListener('submit', function(event
     fetchData(startDate, endDate);
 });
 
+// Función para obtener los datos de la API
 function fetchData(startDate = '', endDate = '') {
     let apiUrl;
 
-    // Detectar en qué página estás usando 
+    // Detectar en qué página estás
     if (window.location.pathname === '/') {
         apiUrl = `/api/data?start_date=${startDate}&end_date=${endDate}`;  
     } else if (window.location.pathname === '/seguridad') {
@@ -56,6 +58,28 @@ function fetchData(startDate = '', endDate = '') {
         })
         .catch(error => console.error('Error al cargar los datos:', error));
 }
+
+// Manejar el botón de scraping
+document.getElementById('scrape-button').addEventListener('click', function() {
+    fetch('/run-scraping', {
+        method: 'POST'
+    })
+    .then(response => response.json())
+    .then(data => {
+        const resultDiv = document.getElementById('result');
+        if (data.status === 'success') {
+            resultDiv.innerHTML = 'Scraping completado. Resultados: <pre>' + JSON.stringify(data, null, 2) + '</pre>';
+            // Puedes optar por llamar a fetchData aquí si quieres cargar automáticamente los nuevos datos después del scraping
+            // fetchData(); 
+        } else {
+            resultDiv.innerHTML = 'Error: ' + data.message;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        document.getElementById('result').innerHTML = 'Error en la conexión con el servidor.';
+    });
+});
 
 // Cargar datos inicialmente
 fetchData();
