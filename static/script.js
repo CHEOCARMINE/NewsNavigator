@@ -11,14 +11,14 @@ function fetchData(startDate = '', endDate = '') {
     let apiUrl;
 
     // Detectar en qué página estás usando 
-    if (window.location.pathname === '/seguridad') {
+    if (window.location.pathname === '/') {
+        apiUrl = `/api/data?start_date=${startDate}&end_date=${endDate}`;  
+    } else if (window.location.pathname === '/seguridad') {
         apiUrl = `/api/seguridad?start_date=${startDate}&end_date=${endDate}`;
-    } else if (window.location.pathname === '/genero_opinion') {
-        apiUrl = `/api/genero_opinion?start_date=${startDate}&end_date=${endDate}`;
     } else if (window.location.pathname === '/gobierno_mexico') {
         apiUrl = `/api/gobierno_mexico?start_date=${startDate}&end_date=${endDate}`;
-    } else {
-        apiUrl = `/api/data?start_date=${startDate}&end_date=${endDate}`;  
+    } else if (window.location.pathname === '/genero_opinion') {
+        apiUrl = `/api/genero_opinion?start_date=${startDate}&end_date=${endDate}`;
     }
 
     // Hacer la petición fetch a la API correspondiente
