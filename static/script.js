@@ -61,18 +61,38 @@ function fetchData(startDate = '', endDate = '') {
 
 // Manejar el botón de scraping
 document.getElementById('scrape-button').addEventListener('click', function() {
-    fetch('/run-scraping', {
-        method: 'POST'
+    let category;
+
+    // Detectar en qué página estás
+    if (window.location.pathname === '/') {
+        category = 'informacion_relevante';
+    } else if (window.location.pathname === '/seguridad') {
+        category = 'seguridad';
+    } else if (window.location.pathname === '/gobierno_mexico') {
+        category = 'gobierno_mexico';
+    } else if (window.location.pathname === '/genero_opinion') {
+        category = 'genero_opinion';
+    } else {
+        console.error('Categoría no encontrada para esta página.');
+        document.getElementById('result').innerHTML = 'Error: No se pudo determinar la categoría.';
+        return;  
+    }
+
+    // Enviar la solicitud de scraping
+    fetch('/scraping', {  
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ category: category })  
     })
     .then(response => response.json())
     .then(data => {
         const resultDiv = document.getElementById('result');
         if (data.status === 'success') {
-            resultDiv.innerHTML = 'Scraping completado. Resultados: <pre>' + JSON.stringify(data, null, 2) + '</pre>';
-            // Puedes optar por llamar a fetchData aquí si quieres cargar automáticamente los nuevos datos después del scraping
-            // fetchData(); 
+            resultDiv.innerHTML = data.message; 
         } else {
-            resultDiv.innerHTML = 'Error: ' + data.message;
+            resultDiv.innerHTML = 'Error: ' + data.message;  
         }
     })
     .catch(error => {

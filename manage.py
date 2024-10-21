@@ -1,8 +1,18 @@
 from dotenv import load_dotenv
 from flask import Flask, jsonify, render_template, request
 from database import get_db_connection
+from webscraping import run_scraping  
+import os
+import sys
+import io
+import logging
 
 load_dotenv()
+
+logging.basicConfig(level=logging.DEBUG)
+
+if sys.stdout.encoding != 'utf-8':
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
 # Configuración de Flask
 app = Flask(__name__)
@@ -12,7 +22,7 @@ app = Flask(__name__)
 def index():
     return render_template('index.html')  
 
- # Ruta para la tabla "seguridad"
+# Ruta para la tabla "seguridad"
 @app.route('/seguridad')
 def seguridad():
     return render_template('seguridad.html')
@@ -100,7 +110,6 @@ def get_seguridad():
 # Ruta para obtener los datos de "gobierno_mexico" en formato JSON con filtrado por fecha
 @app.route('/api/gobierno_mexico', methods=['GET'])
 def get_gobierno_mexico():
-
     connection = get_db_connection()
     cursor = connection.cursor()
 
@@ -166,5 +175,28 @@ def get_genero_opinion():
     connection.close()
     return jsonify(response)
 
+#Forzar la salida UTF-8
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+
+# Ruta para ejecutar el web scraping
+@app.route('/scraping', methods=['POST'])
+def scraping():   
+    try:
+        data = request.get_json()  
+        category = data.get('category')  
+        if not category:
+            return jsonify({'status': 'error', 'message': 'Categoría no especificada.'}), 400
+
+        logging.debug(f'Iniciando busqueda para la categoría: {category}')
+        run_scraping(category)  
+        logging.debug(f'Busqueda completada para la categoría: {category}')
+        return jsonify({'status': 'success', 'message': f'Busqueda para la categoría {category} completado.'})
+    except Exception as e:
+        logging.error(f'Error durante la busqueda: {str(e)}')
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    with open(os.devnull, 'w') as f:
+        sys.stdout = f  
+        app.run(debug=True)
+    sys.stdout = sys.__stdout__ 

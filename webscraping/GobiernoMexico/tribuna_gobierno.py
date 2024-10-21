@@ -8,9 +8,15 @@ import locale
 from datetime import datetime
 import sys
 import io
+import logging
+sys.path.append('C:/Users/cheo_/LABS/NewsNav')
+from database import get_db_connection
 
-# Forzar la salida UTF-8
-if sys.stdout and not sys.stdout.closed:
+# Configuración básica del logging
+logging.basicConfig(level=logging.INFO)
+
+#Forzar la salida UTF-8
+if sys.stdout.encoding != 'utf-8':
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
 # Inicialización de las herramientas de NLP
@@ -22,7 +28,7 @@ sentiment_analyzer = pipeline('sentiment-analysis', model='distilbert-base-uncas
 locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')
 
 # Fecha Objetivo
-date= datetime.now().strftime("%d de %B de %Y")
+date= data= datetime.now().strftime("%d de %B de %Y")
 target_date = datetime.strptime(date, "%d de %B de %Y")
 
 # Truncar Descripciones
@@ -39,15 +45,46 @@ def summarize_text(text):
     summary = " ".join([sent.text for sent in sentences[:2]])
     return summary
 
+# Insertar los datos
+def insert_into_db(item):
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    
+    sql = """INSERT INTO gobierno_mexico (titulo, resumen, fecha, link, relevancia) 
+             VALUES (%s, %s, %s, %s, %s)"""
+    values = (item['title'], item['summary'], item['date'], item['link'], item['relevance'])
+    
+    try:
+        cursor.execute(sql, values)
+        connection.commit()
+        logging.info(f"Datos insertados: {item['title']}")
+    except Exception as e:
+        logging.info(f"Error al insertar datos: {e}")
+    finally:
+        cursor.close()
+        connection.close()
+
 # Extraer Datos
 def extract_data(existing_titles):
-    print("Extrayendo datos de las fuentes...")
+    logging.info("Extrayendo datos de las fuentes...")
 
     all_data = []
     urls = [
-        "https://tribunacampeche.com/category/nacional/",
-        "https://tribunacampeche.com/category/nacional/page/2/",
-        "https://tribunacampeche.com/category/nacional/page/3/",
+        "https://tribunacampeche.com/category/local/",
+        "https://tribunacampeche.com/category/local/page/2/",
+        "https://tribunacampeche.com/category/local/page/3/",
+        "https://tribunacampeche.com/category/municipios/",
+        "https://tribunacampeche.com/category/municipios/page/2/",
+        "https://tribunacampeche.com/category/municipios/page/3/",
+        "https://tribunacampeche.com/category/carmen/",
+        "https://tribunacampeche.com/category/carmen/page/2/",
+        "https://tribunacampeche.com/category/expediente/",
+        "https://tribunacampeche.com/category/expediente/page/2/",
+        "https://tribunacampeche.com/category/policia/",
+        "https://tribunacampeche.com/category/policia/page/2/",
+        "https://tribunacampeche.com/date/2024/",
+        "https://tribunacampeche.com/date/2024/page/2/",
+        "https://tribunacampeche.com/date/2024/page/3/"
     ]
 
     headers = {
@@ -66,7 +103,7 @@ def extract_data(existing_titles):
             # Buscar el contenedor de las noticias
             container = soup.find('div', class_='af-container-row aft-archive-wrapper clearfix archive-layout-list')
             if not container:
-                print(f"No se encontró el contenedor principal en {url}")
+                logging.info(f"No se encontró el contenedor principal en {url}")
                 continue
 
             # Buscar las noticias
@@ -78,7 +115,7 @@ def extract_data(existing_titles):
                 
                 # Filtrar el titulo duplicados
                 if title in existing_titles:
-                    print(f"Noticia duplicada encontrada: {title}")
+                    logging.info(f"Noticia duplicada encontrada: {title}")
                     continue
 
                 existing_titles.add(title)
@@ -91,12 +128,14 @@ def extract_data(existing_titles):
                 try:
                     article_date = datetime.strptime(date, "%d de %B de %Y")
                 except ValueError:
-                    print(f"Formato de fecha no reconocido: {date}")
+                    logging.info(f"Formato de fecha no reconocido: {date}")
                     continue
+
+                formatted_date = article_date.strftime("%Y-%m-%d")
 
                 # Filtrar noticias según la fecha objetivo
                 if article_date != target_date:
-                    print(f"Noticia fuera de la fecha objetivo: {title} - {date}")
+                    logging.info(f"Noticia fuera de la fecha objetivo: {title} - {date}")
                     continue
 
                 # Extraer el enlace de la noticia
@@ -115,30 +154,30 @@ def extract_data(existing_titles):
                     description = "No description found"
 
                 # Imprimir detalles de la noticia
-                print(f"Title: {title}")
-                print(f"Description: {description}")
-                print(f"Date: {date}")
-                print(f"Link: {link}")
+                logging.info(f"Title: {title}")
+                logging.info(f"Description: {description}")
+                logging.info(f"Date: {formatted_date}")
+                logging.info(f"Link: {link}")
 
                 # Lista de datos recopilados
                 news_item = {
                     'title': title,
                     'description': description,
-                    'date': date,
+                    'date': formatted_date,
                     'link': link
                 }
                 all_data.append(news_item)
             
-            time.sleep(2)  
+            time.sleep(2)
 
         except requests.exceptions.RequestException as e:
-            print(f"Error al extraer datos de la página de noticias {url}: {e}")
+            logging.info(f"Error al extraer datos de la página de noticias {url}: {e}")
 
     return all_data
 
 # Preprocesar Datos
 def preprocess_data(data):
-    print("Preprocesando los datos...")
+    logging.info("Preprocesando los datos...")
     processed_data = []
 
     for item in data:
@@ -156,7 +195,7 @@ def detect_keywords(description, keywords):
 
 # Clasificar Datos
 def classify_data(data):
-    print("Clasificando la relevancia de las noticias...")
+    logging.info("Clasificando la relevancia de las noticias...")
     keywords = ['marcha', 'protesta', 'bloqueo carretero', 'cierre de vialidad', 'bloqueo a inmueble', 'aeropuerto bloqueado', 'caseta de peaje bloqueada', 'vía férrea bloqueada', 'ataque a autoridad', 'ataque a actor público', 'ataque a policía', 'ataque a activista', 'proceso electoral interrumpido', 'demanda de apoyo', 'inconformidad con normatividad', 'desastre natural', 'afectación gubernamental', 'protesta social', 'huelga del magisterio', 'universidad en paro', 'bloqueo en aeropuerto', 'manifestación masiva', 'interrupción de servicio público', 'movilización social', 'paralización de actividades', 'asamblea pública', 'contingencia gubernamental', 'sindicato en protesta', 'denuncia contra gobierno', 'resistencia civil', 'queja contra autoridades', 'marchas', 'bloqueos carreteros', 'bloqueos en vialidades', 'bloqueos a inmuebles', 'aeropuertos', 'casetas de peaje', 'vías férreas', 'ataques a actores públicos', 'ataques a policías', 'ataques a activistas', 'autoridades', 'proceso electoral', 'demanda de apoyo', 'inconformidad con normatividad gubernamental', 'desastres naturales', 'magisterio', 'protestas sociales', 'universidades']# Palabras clave
     
     classified_data = []
@@ -177,25 +216,27 @@ def classify_data(data):
 
 # Resumir Datos
 def summarize_data(data):
-    print("Resumiendo las descripciones de las noticias...")
+    logging.info("Resumiendo las descripciones de las noticias...")
     for item in data:
         item['summary'] = summarize_text(item['description'])
     return data
 
 # Presentar Resultados
 def present_results(data):
-    print("Presentando los resultados...")
+    logging.info("Presentando los resultados...")
     for item in data:
-        print("\n")
-        print(f"Titulo: {item['title']}".encode('utf-8', errors='ignore').decode('utf-8'))
-        print(f"Resumen: {item['summary']}".encode('utf-8', errors='ignore').decode('utf-8'))
-        print(f"Fecha: {item['date']}".encode('utf-8', errors='ignore').decode('utf-8'))
-        print(f"Link: {item['link']}".encode('utf-8', errors='ignore').decode('utf-8'))
-        print(f"Importancia: {item['relevance']}".encode('utf-8', errors='ignore').decode('utf-8'))
-        print("\n")
+        if item['relevance'] == 'alta':
+            logging.info("\n")
+            logging.info(f"Titulo: {item['title']}")
+            logging.info(f"Resumen: {item['summary']}")
+            logging.info(f"Fecha: {item['date']}")
+            logging.info(f"Link: {item['link']}")
+            logging.info(f"Importancia: {item['relevance']}")
+
+            insert_into_db(item)
 
 # Función Principal
-def main():
+def scrape_data():
     existing_titles = set()  # Evitar duplicados
 
     raw_data = extract_data(existing_titles)  # Paso 1: Extraer datos
@@ -205,4 +246,4 @@ def main():
     present_results(summarized_data)  # Paso 5: Presentar resultados
 
 if __name__ == "__main__":
-    main()
+    scrape_data()
