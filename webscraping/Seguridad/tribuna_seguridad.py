@@ -196,7 +196,7 @@ def detect_keywords(description, keywords):
 # Clasificar Datos
 def classify_data(data):
     logging.info("Clasificando la relevancia de las noticias...")
-    keywords = ['delito federal', 'narcotráfico', 'tráfico de drogas', 'crimen organizado', 'lavado de dinero', 'corrupción', 'delitos fiscales', 'contrabando', 'fraude fiscal', 'evasión fiscal', 'delitos electorales', 'delincuencia organizada', 'tráfico de armas', 'secuestro', 'trata de personas', 'terrorismo', 'delitos contra la salud', 'falsificación de documentos', 'fraude', 'delitos financieros', 'delitos ambientales', 'crimen transnacional', 'extorsión', 'homicidio', 'robo de combustible', 'huachicol', 'delitos informáticos', 'hackeo', 'piratería']# Palabras clave
+    keywords = ['delito federal', 'narcotráfico', 'tráfico de drogas', 'crimen organizado', 'lavado de dinero', 'corrupción', 'delitos fiscales', 'contrabando', 'fraude fiscal', 'evasión fiscal', 'delitos electorales', 'delincuencia organizada', 'tráfico de armas', 'secuestro', 'trata de personas', 'terrorismo', 'delitos contra la salud', 'falsificación de documentos', 'fraude', 'delitos financieros', 'delitos ambientales', 'crimen transnacional', 'extorsión', 'homicidio', 'robo de combustible', 'huachicol', 'delitos informáticos', 'hackeo', 'piratería','ejecución', 'homicidio sicarial', 'disparos', 'grupo delictivo', 'usura', 'amenaza de deudores', 'desapariciones', 'menores desaparecidos', 'localización de desaparecidos', 'búsqueda de desaparecidos', 'movilización policial', 'detención', 'orden de aprehensión', 'operativo policial', 'sustancias ilegales', 'armas de fuego', 'detenido', 'investigación de delitos', 'alto impacto']# Palabras clave
     
     classified_data = []
     for item in data:
