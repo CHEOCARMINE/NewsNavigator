@@ -181,10 +181,10 @@ def preprocess_data(data):
     processed_data = []
 
     for item in data:
-        item['title'] = item['title'].lower()
-        item['description'] = item['description'].lower()
-        item['date'] = item['date'].lower()
-        item['link'] = item['link'].lower()
+        item['title'] = item['title'].upper()
+        item['description'] = item['description'].upper()
+        item['date'] = item['date'].upper()
+        item['link'] = item['link'].upper()
         processed_data.append(item)
 
     return processed_data
