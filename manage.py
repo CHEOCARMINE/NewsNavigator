@@ -1,7 +1,8 @@
 from dotenv import load_dotenv
 from flask import Flask, jsonify, render_template, request, Response
 from database import get_db_connection
-from webscraping import run_scraping  
+from webscraping import run_scraping
+from apscheduler.schedulers.background import BackgroundScheduler  
 import os
 import sys
 import io
@@ -17,6 +18,19 @@ if sys.stdout.encoding != 'utf-8':
 
 # Configuración de Flask
 app = Flask(__name__)
+
+# Función para ejecutar todos los scrapers
+def ejecutar_todo_el_scraping():
+    categories = ['informacion_relevante', 'seguridad', 'gobierno_mexicano', 'genero_opinion']
+    for category in categories:
+        logging.debug(f'Ejecutando scraping para la categoría: {category}')
+        run_scraping(category)
+        logging.debug(f'Scraping para la categoría {category} completado.')
+
+# Configurar el programador
+scheduler = BackgroundScheduler()
+scheduler.add_job(ejecutar_todo_el_scraping, 'cron', hour=22, minute=30)  
+scheduler.start()
 
 # Ruta para la tabla "informacion_relevante"
 @app.route('/')

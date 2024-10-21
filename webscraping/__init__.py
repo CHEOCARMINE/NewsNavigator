@@ -1,3 +1,4 @@
+import logging
 def run_scraping(category):
     
     if category == 'informacion_relevante':
@@ -18,4 +19,4 @@ def run_scraping(category):
     else:
         raise ValueError(f'Categoría {category} no reconocida.')
 
-    print(f"Scraping para la categoría {category} completado.")
+    logging.info(f"Scraping para la categoría {category} completado.")
