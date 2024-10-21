@@ -10,7 +10,7 @@ import sys
 import io
 import logging
 sys.path.append('C:/Users/cheo_/LABS/NewsNav')
-from database import get_db_connection
+from database import get_db_connection, exists_in_db, insert_into_db
 
 # Configuración básica del logging
 logging.basicConfig(level=logging.INFO)
@@ -226,7 +226,11 @@ def present_results(data):
             logging.info(f"Link: {item['link']}")
             logging.info(f"Importancia: {item['relevance']}")
 
-            insert_into_db(item)
+            # Verificar si el título ya existe antes de insertar
+            if not exists_in_db(item['title']):
+                insert_into_db(item)
+            else:
+                logging.info(f"El título ya existe en la base de datos: {item['title']}")
 
 # Función Principal
 def scrape_data():
