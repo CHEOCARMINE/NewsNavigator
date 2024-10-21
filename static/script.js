@@ -13,19 +13,32 @@ function fetchData(startDate = '', endDate = '') {
     let apiUrl;
 
     // Detectar en qué página estás
-    if (window.location.pathname === '/') {
-        apiUrl = `/api/data?start_date=${startDate}&end_date=${endDate}`;  
-    } else if (window.location.pathname === '/seguridad') {
-        apiUrl = `/api/seguridad?start_date=${startDate}&end_date=${endDate}`;
-    } else if (window.location.pathname === '/gobierno_mexico') {
-        apiUrl = `/api/gobierno_mexico?start_date=${startDate}&end_date=${endDate}`;
-    } else if (window.location.pathname === '/genero_opinion') {
-        apiUrl = `/api/genero_opinion?start_date=${startDate}&end_date=${endDate}`;
+    switch (window.location.pathname) {
+        case '/':
+            apiUrl = `/api/data?start_date=${startDate}&end_date=${endDate}`;  
+            break;
+        case '/seguridad':
+            apiUrl = `/api/seguridad?start_date=${startDate}&end_date=${endDate}`;
+            break;
+        case '/gobierno_mexico':
+            apiUrl = `/api/gobierno_mexico?start_date=${startDate}&end_date=${endDate}`;
+            break;
+        case '/genero_opinion':
+            apiUrl = `/api/genero_opinion?start_date=${startDate}&end_date=${endDate}`;
+            break;
+        default:
+            console.error('Ruta no válida');
+            return;
     }
 
     // Hacer la petición fetch a la API correspondiente
     fetch(apiUrl)
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Error en la respuesta de la API');
+            }
+            return response.json();
+        })
         .then(data => {
             const tableBody = document.querySelector('#news-table tbody');
             tableBody.innerHTML = ''; 
@@ -59,24 +72,57 @@ function fetchData(startDate = '', endDate = '') {
         .catch(error => console.error('Error al cargar los datos:', error));
 }
 
+// Función para ocultar el resultado después de un retraso
+function hideResultAfterDelay() {
+    setTimeout(() => {
+        document.getElementById('result').innerHTML = ''; 
+        document.getElementById('result').style.display = 'none'; 
+    }, 10000); 
+}
+
 // Manejar el botón de scraping
 document.getElementById('scrape-button').addEventListener('click', function() {
+    // Limpiar el área de resultados
+    document.getElementById('result').innerHTML = ''; 
+    document.getElementById('result').style.display = 'none'; 
+
     let category;
 
     // Detectar en qué página estás
-    if (window.location.pathname === '/') {
-        category = 'informacion_relevante';
-    } else if (window.location.pathname === '/seguridad') {
-        category = 'seguridad';
-    } else if (window.location.pathname === '/gobierno_mexico') {
-        category = 'gobierno_mexico';
-    } else if (window.location.pathname === '/genero_opinion') {
-        category = 'genero_opinion';
-    } else {
-        console.error('Categoría no encontrada para esta página.');
-        document.getElementById('result').innerHTML = 'Error: No se pudo determinar la categoría.';
-        return;  
+    switch (window.location.pathname) {
+        case '/':
+            category = 'informacion_relevante';
+            break;
+        case '/seguridad':
+            category = 'seguridad';
+            break;
+        case '/gobierno_mexico':
+            category = 'gobierno_mexico';
+            break;
+        case '/genero_opinion':
+            category = 'genero_opinion';
+            break;
+        default:
+            console.error('Categoría no encontrada para esta página.');
+            document.getElementById('result').innerHTML = 'Error: No se pudo determinar la categoría.';
+            document.getElementById('result').style.display = 'block'; 
+            hideResultAfterDelay(); 
+            return;  
     }
+
+    // Mostrar la barra de carga
+    const loader = document.createElement('div');
+    loader.className = 'loader';
+    loader.innerHTML = `
+        <div class="loading-text">
+            Cargando<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span>
+        </div>
+        <div class="loading-bar-background">
+            <div class="loading-bar" id="loading-bar" style="width: 0%;"></div>
+        </div>
+    `;
+    document.getElementById('result').appendChild(loader);
+    document.getElementById('result').style.display = 'block'; 
 
     // Enviar la solicitud de scraping
     fetch('/scraping', {  
@@ -86,18 +132,37 @@ document.getElementById('scrape-button').addEventListener('click', function() {
         },
         body: JSON.stringify({ category: category })  
     })
-    .then(response => response.json())
-    .then(data => {
-        const resultDiv = document.getElementById('result');
-        if (data.status === 'success') {
-            resultDiv.innerHTML = data.message; 
-        } else {
-            resultDiv.innerHTML = 'Error: ' + data.message;  
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Error en la respuesta del scraping');
         }
+        return response.json();
+    })
+    .then(data => {
+        const loadingBar = document.getElementById('loading-bar');
+
+        if (data.status === 'success') {
+            loadingBar.style.width = '100%';  
+            loadingBar.innerText = 'Completado';
+            document.getElementById('result').innerHTML = data.message; 
+        } else {
+            loadingBar.style.width = '100%';  
+            loadingBar.innerText = 'Error';
+            document.getElementById('result').innerHTML = 'Error: ' + data.message;  
+        }
+
+        // Llamar a la función para ocultar el resultado 
+        hideResultAfterDelay();
     })
     .catch(error => {
         console.error('Error:', error);
         document.getElementById('result').innerHTML = 'Error en la conexión con el servidor.';
+        const loadingBar = document.getElementById('loading-bar');
+        loadingBar.style.width = '100%';  
+        loadingBar.innerText = 'Error';
+
+        // Llamar a la función para ocultar el resultado
+        hideResultAfterDelay();
     });
 });
 

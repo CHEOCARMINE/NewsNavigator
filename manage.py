@@ -1,11 +1,12 @@
 from dotenv import load_dotenv
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, jsonify, render_template, request, Response
 from database import get_db_connection
 from webscraping import run_scraping  
 import os
 import sys
 import io
 import logging
+import time
 
 load_dotenv()
 
@@ -17,7 +18,7 @@ if sys.stdout.encoding != 'utf-8':
 # Configuración de Flask
 app = Flask(__name__)
 
-# Ruta para de la tabla "informacion_relevante"
+# Ruta para la tabla "informacion_relevante"
 @app.route('/')
 def index():
     return render_template('index.html')  
@@ -47,7 +48,6 @@ def get_data():
     start_date = request.args.get('start_date')
     end_date = request.args.get('end_date')
     
-    # Consulta SQL con filtrado por fecha
     query = 'SELECT titulo, resumen, fecha, link FROM informacion_relevante WHERE 1=1'
     
     if start_date:
@@ -175,10 +175,16 @@ def get_genero_opinion():
     connection.close()
     return jsonify(response)
 
-#Forzar la salida UTF-8
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+# Ruta para manejar el progreso del scraping
+@app.route('/progress_scraping', methods=['GET'])
+def progress_scraping():
+    def generate_progress():
+        for i in range(101):  
+            time.sleep(0.1)  
+            yield f"data:{i}\n\n"
+    return Response(generate_progress(), mimetype='text/event-stream')
 
-# Ruta para ejecutar el web scraping
+# Ruta para ejecutar el web scraping con progreso
 @app.route('/scraping', methods=['POST'])
 def scraping():   
     try:
@@ -187,16 +193,16 @@ def scraping():
         if not category:
             return jsonify({'status': 'error', 'message': 'Categoría no especificada.'}), 400
 
-        logging.debug(f'Iniciando busqueda para la categoría: {category}')
-        run_scraping(category)  
-        logging.debug(f'Busqueda completada para la categoría: {category}')
-        return jsonify({'status': 'success', 'message': f'Busqueda para la categoría {category} completado.'})
+        logging.debug(f'Iniciando búsqueda para la categoría: {category}')
+        run_scraping(category) 
+        logging.debug(f'Búsqueda completada para la categoría: {category}')
+        return jsonify({'status': 'success', 'message': f'Búsqueda para la categoría {category} completada.'})
     except Exception as e:
-        logging.error(f'Error durante la busqueda: {str(e)}')
+        logging.error(f'Error durante la búsqueda: {str(e)}')
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
 if __name__ == '__main__':
     with open(os.devnull, 'w') as f:
         sys.stdout = f  
         app.run(debug=True)
-    sys.stdout = sys.__stdout__ 
+    sys.stdout = sys.__stdout__
