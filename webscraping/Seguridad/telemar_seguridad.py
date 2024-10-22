@@ -218,7 +218,7 @@ def summarize_data(data):
 def present_results(data):
     logging.info("Presentando los resultados...")
     for item in data:
-        if item['relevance'] == 'alta':
+        #if item['relevance'] == 'alta':
             logging.info("\n")
             logging.info(f"Titulo: {item['title']}")
             logging.info(f"Resumen: {item['summary']}")
