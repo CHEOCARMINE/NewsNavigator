@@ -10,7 +10,7 @@ import sys
 import io
 import logging
 sys.path.append('C:/Users/cheo_/LABS/NewsNav')
-from database import get_db_connection, exists_in_db, insert_into_db
+from database import get_db_connection, exists_in_db_informacion_relevante, insert_into_db_informacion_relevante
 
 # Configuración básica del logging
 logging.basicConfig(level=logging.INFO)
@@ -28,7 +28,8 @@ sentiment_analyzer = pipeline('sentiment-analysis', model='distilbert-base-uncas
 locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')
 
 # Fecha Objetivo
-date= data= datetime.now().strftime("%d de %B de %Y")
+#date= data= datetime.now().strftime("%d de %B de %Y")
+date = "21 de octubre de 2024" 
 target_date = datetime.strptime(date, "%d de %B de %Y")
 
 # Truncar Descripciones
@@ -234,8 +235,8 @@ def present_results(data):
             logging.info(f"Importancia: {item['relevance']}")
 
             # Verificar si el título ya existe antes de insertar
-            if not exists_in_db(item['title']):
-                insert_into_db(item)
+            if not exists_in_db_informacion_relevante(item['title']):
+                insert_into_db_informacion_relevante(item)
             else:
                 logging.info(f"El título ya existe en la base de datos: {item['title']}")
 
