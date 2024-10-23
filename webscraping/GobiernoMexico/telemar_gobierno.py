@@ -184,7 +184,7 @@ def preprocess_data(data):
 
 # Detectar Palabras Clave
 def detect_keywords(description, keywords):
-    return any(keyword in description for keyword in keywords)
+    return any(keyword in description.lower() for keyword in keywords)
 
 # Clasificar Datos
 def classify_data(data):

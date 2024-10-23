@@ -28,7 +28,7 @@ sentiment_analyzer = pipeline('sentiment-analysis', model='distilbert-base-uncas
 locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')
 
 # Fecha Objetivo
-date= data= datetime.now().strftime("%d de %B de %Y") 
+date= data= datetime.now().strftime("%d de %B de %Y")
 target_date = datetime.strptime(date, "%d de %B de %Y")
 
 # Truncar Descripciones
@@ -191,36 +191,12 @@ def preprocess_data(data):
 
 # Detectar Palabras Clave
 def detect_keywords(description, keywords):
-    return any(keyword in description for keyword in keywords)
+    return any(keyword in description.lower() for keyword in keywords)
 
 # Clasificar Datos
 def classify_data(data):
     logging.info("Clasificando la relevancia de las noticias...")
-    keywords = [
-    'marcha', 'protesta', 'bloqueo', 'huelga', 'paro', 'manifestación', 
-    'movilización', 'resistencia', 'denuncia', 'inconformidad', 'queja', 
-    'asamblea', 'sindicato', 'desastre', 'inundación', 'deslave', 
-    'huracán', 'terremoto', 'evacuación', 'emergencia', 'corrupción', 
-    'fraude', 'detención', 'conflicto', 'violencia', 'ataque', 
-    'secuestro', 'extorsión', 'levantamiento', 'ocupación', 
-    'bloqueo carretero', 'cierre de vialidad', 'aeropuerto bloqueado', 
-    'caseta de peaje bloqueada', 'vía férrea bloqueada', 
-    'proceso electoral interrumpido', 'demanda de apoyo', 
-    'afectación gubernamental', 'protesta social', 'huelga del magisterio', 
-    'universidad en paro', 'manifestación masiva', 
-    'interrupción de servicio público', 'paralización de actividades', 
-    'contingencia gubernamental', 'resistencia civil', 
-    'atención a afectados', 'brigadas de ayuda', 'pescadores', 
-    'campesinos', 'trabajadores', 'salud', 'estudiantes', 
-    'comunidad indígena', 'defensa de tierras', 'protestas laborales', 
-    'movimientos campesinos', 'comunidades afectadas', 
-    'exigencia de derechos', 'lucha sindical', 'conflictos comunitarios', 
-    'protesta por servicios públicos', 'economía local', 
-    'grupo parlamentario', 'congreso del estado', 'censo de afectados', 
-    'bienestar social', 'condiciones de vida', 
-    'problemas de infraestructura', 'colapsos viales', 
-    'comunicaciones interrumpidas', 'acciones preventivas', 
-    'sindicato', 'maestros', 'estudiantes', 'pescadores', 'pensionados'] # Palabras clave
+    keywords = ['marcha', 'protesta', 'bloqueo', 'huelga', 'paro', 'manifestación', 'movilización', 'resistencia', 'denuncia', 'inconformidad', 'queja', 'asamblea', 'sindicato', 'desastre', 'inundación', 'deslave', 'huracán', 'terremoto', 'evacuación', 'emergencia', 'corrupción', 'fraude', 'detención', 'conflicto', 'violencia', 'ataque', 'secuestro', 'extorsión', 'levantamiento', 'ocupación', 'bloqueo carretero', 'cierre de vialidad', 'aeropuerto bloqueado', 'caseta de peaje bloqueada', 'vía férrea bloqueada', 'proceso electoral interrumpido', 'demanda de apoyo', 'afectación gubernamental', 'protesta social', 'huelga del magisterio', 'universidad en paro', 'manifestación masiva', 'interrupción de servicio público', 'paralización de actividades', 'contingencia gubernamental', 'resistencia civil', 'atención a afectados', 'brigadas de ayuda', 'pescadores', 'campesinos', 'trabajadores','salud', 'estudiantes', 'comunidad indígena', 'defensa de tierras', 'protestas laborales', 'movimientos campesinos', 'comunidades afectadas', 'exigencia de derechos', 'lucha sindical', 'conflictos comunitarios', 'protesta por servicios públicos', 'economía local', 'grupo parlamentario', 'congreso del estado', 'censo de afectados', 'bienestar social', 'condiciones de vida', 'problemas de infraestructura', 'colapsos viales', 'comunicaciones interrumpidas', 'acciones preventivas', 'sindicato', 'maestros', 'estudiantes', 'pescadores', 'pensionados'] # Palabras clave
     
     classified_data = []
     for item in data:
@@ -249,7 +225,7 @@ def summarize_data(data):
 def present_results(data):
     logging.info("Presentando los resultados...")
     for item in data:
-        #if item['relevance'] == 'alta':
+        if item['relevance'] == 'alta':
             logging.info("\n")
             logging.info(f"Titulo: {item['title']}")
             logging.info(f"Resumen: {item['summary']}")

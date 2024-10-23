@@ -1,3 +1,13 @@
+@font-face {
+    font-family: 'Geomanist';
+    src: url('static/fonts/geomanist-regular-webfont.eot'); 
+    src: url('static/fonts/geomanist-regular-webfont.eot?#iefix') format('embedded-opentype'), 
+         url('static/fonts/geomanist-regular-webfont.woff2') format('woff2'), 
+         url('static/fonts/geomanist-regular-webfont.woff') format('woff'); 
+    font-weight: normal;
+    font-style: normal;
+}
+
 /* Reinicio de estilos y configuración básica */
 * {
     margin: 0;
@@ -6,8 +16,8 @@
 }
 
 body {
-    font-family: Arial, sans-serif;
-    background-color: #2E2E3A;
+    font-family: 'Geomanist', sans-serif;
+    background-color: #ffffff;
 }
 
 /* Estilos del encabezado */
@@ -92,14 +102,16 @@ h1 {
     background-color: #621132; 
     color: #ffffff; 
     padding: 10px; 
-    border-bottom: 2px solid #ffffff; 
+    border-bottom: 2px solid #ffffff;
+    font-family: 'Geomanist', sans-serif; 
 }
 
 /* Estilos para las celdas de la tabla */
 #news-table td {
     padding: 10px; 
     border-bottom: 1px solid #ddd; 
-    color: #ffffff; 
+    color: #000000;
+    font-family: 'Geomanist', sans-serif; 
 }
 
 /* Estilo alternativo para filas */
@@ -126,23 +138,25 @@ h1 {
     gap: 20px; 
 }
 
-/* Estilo adicional para el formulario */
-.date-filter {
-    display: flex; 
-    align-items: center; 
-}
-
-.date-filter label {
-    margin-right: 5px; 
-}
-
-.date-filter input {
-    margin-right: 10px; 
-    height: 2.5em; 
-    border: 1px solid #ccc; 
+/* Estilos para los cuadros de selección de fecha */
+.date-filter input[type="date"] {
+    background-color: #6F7271;
+    color: #ffffff;
+    border: 1px solid #BC955C;
     border-radius: 0.3em;
-    background-color: #3A3A45;
-    color: #ffffff; 
+    padding: 5px;
+    height: 2.5em;
+}
+
+.date-filter input[type="date"]::placeholder {
+    color: #ffffff;
+    opacity: 0.7;
+}
+
+.date-filter input[type="date"]:focus {
+    outline: none;
+    border-color: #BC955C;
+    box-shadow: 0 0 5px #BC955C;
 }
 
 /* Estilos para los botones */
@@ -156,7 +170,7 @@ button {
     position: relative;
     overflow: hidden;
     z-index: 1;
-    background-color: #4C2B3A;
+    background-color: #621132;
     color: #ffffff;
 }
 
