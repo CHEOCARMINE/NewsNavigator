@@ -18,6 +18,10 @@
             <li><a href="{{ url_for('seguridad') }}">SEGURIDAD</a></li>
             <li><a href="{{ url_for('gobierno_mexico') }}">GOBIERNO DE MÉXICO</a></li>
             <li><a href="{{ url_for('genero_opinion') }}">GÉNEROS DE OPINIÓN</a></li>
+            {% if session.get('rol') == 'administrador' %}
+            <li><a href="{{ url_for('admin_dashboard') }}">PANEL ADMINISTRADOR</a></li>
+        {% endif %}
+            <li><a href="{{ url_for('logout') }}">CERRAR SESIÓN</a></li>
         </ul>
     </nav>
 

@@ -1,8 +1,9 @@
 from dotenv import load_dotenv
-from flask import Flask, jsonify, render_template, request, Response
-from database import get_db_connection
+from flask import Flask, jsonify, render_template, request, Response, redirect, url_for, session, flash
+from database import get_db_connection, registrar_usuario, autenticar_usuario, existe_usuario, modificar_usuario, eliminar_usuario
 from webscraping import run_scraping
 from apscheduler.schedulers.background import BackgroundScheduler  
+from functools import wraps
 import os
 import sys
 import io
@@ -18,6 +19,7 @@ if sys.stdout.encoding != 'utf-8':
 
 # Configuración de Flask
 app = Flask(__name__)
+app.secret_key = 'tu_clave_secreta'
 
 # Función para ejecutar todos los scrapers
 def ejecutar_todo_el_scraping():
@@ -32,33 +34,25 @@ scheduler = BackgroundScheduler()
 scheduler.add_job(ejecutar_todo_el_scraping, 'cron', hour=22, minute=30)  
 scheduler.start()
 
-# Ruta para la tabla "informacion_relevante"
-@app.route('/')
-def index():
-    return render_template('index.html')  
-
-# Ruta para la tabla "seguridad"
+# Rutas para las diferentes secciones
 @app.route('/seguridad')
 def seguridad():
     return render_template('seguridad.html')
 
-# Ruta para la tabla "gobierno_mexico"
 @app.route('/gobierno_mexico')
 def gobierno_mexico():
     return render_template('gobierno_mexico.html')  
 
-# Ruta para la tabla "genero_opinion"
 @app.route('/genero_opinion')
 def genero_opinion():
     return render_template('genero_opinion.html') 
 
-# Ruta para obtener los datos de "informacion_relevante" en formato JSON con filtrado por fecha
+# Rutas para obtener datos en formato JSON
 @app.route('/api/data', methods=['GET'])
 def get_data():
     connection = get_db_connection()
     cursor = connection.cursor()
     
-    # Obtener los parámetros de fecha de la solicitud
     start_date = request.args.get('start_date')
     end_date = request.args.get('end_date')
     
@@ -87,108 +81,6 @@ def get_data():
     connection.close()
     return jsonify(response)
 
-# Ruta para obtener los datos de "seguridad" en formato JSON con filtrado por fecha
-@app.route('/api/seguridad', methods=['GET'])
-def get_seguridad():
-    connection = get_db_connection()
-    cursor = connection.cursor()
-
-    start_date = request.args.get('start_date')
-    end_date = request.args.get('end_date')
-
-    query = 'SELECT titulo, resumen, fecha, link FROM seguridad WHERE 1=1'
-    
-    if start_date:
-        query += f" AND fecha >= '{start_date}'"
-    if end_date:
-        query += f" AND fecha <= '{end_date}'"
-
-    query += ' ORDER BY fecha DESC'
-
-    cursor.execute(query)
-    data = cursor.fetchall()
-
-    response = []
-    for row in data:
-        item = {
-            'titulo': row[0],
-            'descripcion': row[1],
-            'fecha': row[2],
-            'link': row[3]
-        }
-        response.append(item)
-    
-    connection.close()
-    return jsonify(response)
-
-# Ruta para obtener los datos de "gobierno_mexico" en formato JSON con filtrado por fecha
-@app.route('/api/gobierno_mexico', methods=['GET'])
-def get_gobierno_mexico():
-    connection = get_db_connection()
-    cursor = connection.cursor()
-
-    start_date = request.args.get('start_date')
-    end_date = request.args.get('end_date')
-
-    query = 'SELECT titulo, resumen, fecha, link FROM gobierno_mexico WHERE 1=1'
-    
-    if start_date:
-        query += f" AND fecha >= '{start_date}'"
-    if end_date:
-        query += f" AND fecha <= '{end_date}'"
-
-    query += ' ORDER BY fecha DESC'
-
-    cursor.execute(query)
-    data = cursor.fetchall()
-
-    response = []
-    for row in data:
-        item = {
-            'titulo': row[0],
-            'descripcion': row[1],
-            'fecha': row[2],
-            'link': row[3]
-        }
-        response.append(item)
-    
-    connection.close()
-    return jsonify(response)
-
-# Ruta para obtener los datos de "genero_opinion" en formato JSON con filtrado por fecha
-@app.route('/api/genero_opinion', methods=['GET'])
-def get_genero_opinion():
-    connection = get_db_connection()
-    cursor = connection.cursor()
-
-    start_date = request.args.get('start_date')
-    end_date = request.args.get('end_date')
-
-    query = 'SELECT titulo, resumen, fecha, link FROM genero_opinion WHERE 1=1'
-    
-    if start_date:
-        query += f" AND fecha >= '{start_date}'"
-    if end_date:
-        query += f" AND fecha <= '{end_date}'"
-
-    query += ' ORDER BY fecha DESC'
-
-    cursor.execute(query)
-    data = cursor.fetchall()
-
-    response = []
-    for row in data:
-        item = {
-            'titulo': row[0],
-            'descripcion': row[1],
-            'fecha': row[2],
-            'link': row[3]
-        }
-        response.append(item)
-    
-    connection.close()
-    return jsonify(response)
-
 # Ruta para manejar el progreso del scraping
 @app.route('/progress_scraping', methods=['GET'])
 def progress_scraping():
@@ -198,7 +90,7 @@ def progress_scraping():
             yield f"data:{i}\n\n"
     return Response(generate_progress(), mimetype='text/event-stream')
 
-# Ruta para ejecutar el web scraping con progreso
+# Ruta para ejecutar el web scraping
 @app.route('/scraping', methods=['POST'])
 def scraping():   
     try:
@@ -214,6 +106,111 @@ def scraping():
     except Exception as e:
         logging.error(f'Error durante la búsqueda: {str(e)}')
         return jsonify({'status': 'error', 'message': str(e)}), 500
+
+# Decorador para requerir autenticación en ciertas rutas
+def login_requerido(f):
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        if 'logged_in' in session:
+            return f(*args, **kwargs)
+        else:
+            flash("Debes iniciar sesión primero.", "danger")
+            return redirect(url_for('login'))
+    return wrap
+
+# Decorador para requerir rol de administrador
+def admin_requerido(f):
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        if session.get('rol') == 'administrador':
+            return f(*args, **kwargs)
+        else:
+            flash("No tienes permiso para acceder a esta página.", "danger")
+            return redirect(url_for('index'))
+    return wrap
+
+# Ruta de login
+@app.route("/login", methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        usuario = request.form['usuario']
+        contraseña = request.form['contraseña']
+
+        # Autenticar usuario
+        autenticado, rol = autenticar_usuario(usuario, contraseña)
+        if autenticado:
+            session['logged_in'] = True
+            session['usuario'] = usuario
+            session['rol'] = rol
+            flash(f"Bienvenido, {usuario}!", "success")
+            return redirect(url_for('index'))
+        else:
+            flash("Credenciales incorrectas, por favor intenta de nuevo.", "danger")
+    return render_template('login.html')
+
+# Ruta de logout
+@app.route("/logout")
+def logout():
+    session.clear()
+    flash("Has cerrado sesión exitosamente.", "success")
+    return redirect(url_for('login'))
+
+# Ruta protegida para administradores
+@app.route("/admin_dashboard", methods=['GET', 'POST'])
+@login_requerido
+@admin_requerido
+def admin_dashboard():
+    usuarios = obtener_usuarios()  # Llama a la función para obtener la lista de usuarios
+
+    if request.method == 'POST':
+        if 'registrar' in request.form:
+            usuario = request.form['usuario']
+            contraseña = request.form['contraseña']
+            rol = request.form['rol']
+
+            if existe_usuario(usuario):
+                flash("Este usuario ya existe.", "danger")
+            else:
+                registrar_usuario(usuario, contraseña, rol)
+                flash(f"Usuario {usuario} registrado con éxito.", "success")
+
+        elif 'modificar' in request.form:
+            usuario_id = request.form['usuario_id']
+            nuevo_usuario = request.form['nuevo_usuario']
+            nueva_contraseña = request.form['nueva_contraseña']  # Obtenemos también la nueva contraseña
+            nuevo_rol = request.form['nuevo_rol']
+            
+            # Verificamos si la nueva contraseña no está vacía antes de modificar
+            if nueva_contraseña:
+                modificar_usuario(usuario_id, nuevo_usuario, nueva_contraseña, nuevo_rol)
+            else:
+                modificar_usuario(usuario_id, nuevo_usuario, None, nuevo_rol)  # Si no hay nueva contraseña, no se modifica
+            
+            flash("Usuario modificado con éxito.", "success")
+
+        elif 'eliminar' in request.form:
+            usuario_id = request.form['usuario_id_eliminar']
+            eliminar_usuario(usuario_id)
+            flash("Usuario eliminado con éxito.", "success")
+        
+        return redirect(url_for('admin_dashboard'))  # Redirige después de registrar/modificar/eliminar el usuario
+    
+    return render_template('admin_dashboard.html', usuarios=usuarios)
+
+# Función para obtener la lista de usuarios
+def obtener_usuarios():
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT id, usuario, rol FROM usuarios")  # Asegúrate de incluir el ID del usuario
+    usuarios = cursor.fetchall()
+    connection.close()
+    return usuarios
+
+# Ruta para la página principal
+@app.route("/")
+@login_requerido
+def index():
+    return render_template('index.html')
 
 if __name__ == '__main__':
     with open(os.devnull, 'w') as f:
