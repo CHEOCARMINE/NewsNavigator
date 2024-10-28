@@ -31,21 +31,8 @@ def ejecutar_todo_el_scraping():
 
 # Configurar el programador
 scheduler = BackgroundScheduler()
-scheduler.add_job(ejecutar_todo_el_scraping, 'cron', hour=11, minute=20)  
-scheduler.start()
-
-# Rutas para las diferentes secciones
-@app.route('/seguridad')
-def seguridad():
-    return render_template('seguridad.html')
-
-@app.route('/gobierno_mexico')
-def gobierno_mexico():
-    return render_template('gobierno_mexico.html')  
-
-@app.route('/genero_opinion')
-def genero_opinion():
-    return render_template('genero_opinion.html') 
+scheduler.add_job(ejecutar_todo_el_scraping, 'cron', hour=22, minute=30)  
+scheduler.start() 
 
 # Rutas para obtener datos en formato JSON "informacion_relevante"
 @app.route('/api/data', methods=['GET'])
@@ -340,6 +327,24 @@ def obtener_usuarios():
 @login_requerido
 def index():
     return render_template('index.html')
+
+# Ruta para la página seguridad
+@app.route('/seguridad')
+@login_requerido
+def seguridad():
+    return render_template('seguridad.html')
+
+# Ruta para la página gobierno_mexico
+@app.route('/gobierno_mexico')
+@login_requerido
+def gobierno_mexico():
+    return render_template('gobierno_mexico.html')  
+
+# Ruta para la página genero_opinion
+@app.route('/genero_opinion')
+@login_requerido
+def genero_opinion():
+    return render_template('genero_opinion.html') 
 
 if __name__ == '__main__':
     with open(os.devnull, 'w') as f:
