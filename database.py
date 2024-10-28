@@ -102,7 +102,7 @@ def modificar_usuario(usuario_id, nuevo_usuario, nueva_contraseña=None, nuevo_r
     cursor = connection.cursor()
 
     # Comenzamos la actualización
-    if nueva_contraseña:  # Si se proporciona una nueva contraseña
+    if nueva_contraseña:
         hashed_new_password = bcrypt.generate_password_hash(nueva_contraseña).decode('utf-8')
         sql = "UPDATE usuarios SET usuario = %s, contraseña = %s, rol = %s WHERE id = %s"
         values = (nuevo_usuario, hashed_new_password, nuevo_rol, usuario_id)
@@ -153,9 +153,9 @@ def insert_into_db_informacion_relevante(item):
     connection = get_db_connection()
     cursor = connection.cursor()
     
-    sql = """INSERT INTO informacion_relevante (titulo, resumen, fecha, link, relevancia) 
-             VALUES (%s, %s, %s, %s, %s)"""
-    values = (item['title'], item['summary'], item['date'], item['link'], item['relevance'])
+    sql = """INSERT INTO informacion_relevante (titulo, resumen, fecha, link, relevancia, fuente) 
+             VALUES (%s, %s, %s, %s, %s, %s)"""
+    values = (item['title'], item['summary'], item['date'], item['link'], item['relevance'], item['source'])
     
     try:
         cursor.execute(sql, values)
@@ -182,9 +182,9 @@ def insert_into_db_seguridad(item):
     connection = get_db_connection()
     cursor = connection.cursor()
     
-    sql = """INSERT INTO seguridad (titulo, resumen, fecha, link, relevancia) 
-             VALUES (%s, %s, %s, %s, %s)"""
-    values = (item['title'], item['summary'], item['date'], item['link'], item['relevance'])
+    sql = """INSERT INTO seguridad (titulo, resumen, fecha, link, relevancia, fuente) 
+             VALUES (%s, %s, %s, %s, %s, %s)"""
+    values = (item['title'], item['summary'], item['date'], item['link'], item['relevance'], item['source'])
     
     try:
         cursor.execute(sql, values)
@@ -211,9 +211,9 @@ def insert_into_db_gobierno_mexico(item):
     connection = get_db_connection()
     cursor = connection.cursor()
     
-    sql = """INSERT INTO gobierno_mexico (titulo, resumen, fecha, link, relevancia) 
-             VALUES (%s, %s, %s, %s, %s)"""
-    values = (item['title'], item['summary'], item['date'], item['link'], item['relevance'])
+    sql = """INSERT INTO gobierno_mexico (titulo, resumen, fecha, link, relevancia, fuente) 
+             VALUES (%s, %s, %s, %s, %s, %s)"""
+    values = (item['title'], item['summary'], item['date'], item['link'], item['relevance'], item['source'])
     
     try:
         cursor.execute(sql, values)
@@ -240,9 +240,9 @@ def insert_into_db_genero_opinion(item):
     connection = get_db_connection()
     cursor = connection.cursor()
     
-    sql = """INSERT INTO genero_opinion (titulo, resumen, fecha, link, relevancia) 
-             VALUES (%s, %s, %s, %s, %s)"""
-    values = (item['title'], item['summary'], item['date'], item['link'], item['relevance'])
+    sql = """INSERT INTO genero_opinion (titulo, resumen, fecha, link, relevancia, fuente) 
+             VALUES (%s, %s, %s, %s, %s, %s)"""
+    values = (item['title'], item['summary'], item['date'], item['link'], item['relevance'], item['source'])
     
     try:
         cursor.execute(sql, values)

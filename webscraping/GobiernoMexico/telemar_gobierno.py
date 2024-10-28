@@ -50,9 +50,9 @@ def insert_into_db(item):
     connection = get_db_connection()
     cursor = connection.cursor()
     
-    sql = """INSERT INTO gobierno_mexico (titulo, resumen, fecha, link, relevancia) 
-             VALUES (%s, %s, %s, %s, %s)"""
-    values = (item['title'], item['summary'], item['date'], item['link'], item['relevance'])
+    sql = """INSERT INTO gobierno_mexico (titulo, resumen, fecha, link, relevancia, fuente) 
+             VALUES (%s, %s, %s, %s, %s, %s)"""
+    values = (item['title'], item['summary'], item['date'], item['link'], item['relevance'], item['source'])
     
     try:
         cursor.execute(sql, values)
@@ -178,6 +178,7 @@ def preprocess_data(data):
         item['description'] = item['description'].upper()
         item['date'] = item['date'].upper()
         item['link'] = item['link'].lower()
+        item['source'] = "static/images/logos/TelemarLogo.png"
         processed_data.append(item)
 
     return processed_data
@@ -225,6 +226,7 @@ def present_results(data):
             logging.info(f"Fecha: {item['date']}")
             logging.info(f"Link: {item['link']}")
             logging.info(f"Importancia: {item['relevance']}")
+            logging.info(f"Fuente: {item['source']}")
 
             # Verificar si el título ya existe antes de insertar
             if not exists_in_db_gobierno_mexico(item['title']):

@@ -31,7 +31,7 @@ def ejecutar_todo_el_scraping():
 
 # Configurar el programador
 scheduler = BackgroundScheduler()
-scheduler.add_job(ejecutar_todo_el_scraping, 'cron', hour=22, minute=30)  
+scheduler.add_job(ejecutar_todo_el_scraping, 'cron', hour=11, minute=20)  
 scheduler.start()
 
 # Rutas para las diferentes secciones
@@ -52,32 +52,39 @@ def genero_opinion():
 def get_data():
     connection = get_db_connection()
     cursor = connection.cursor()
-    
+
     start_date = request.args.get('start_date')
     end_date = request.args.get('end_date')
-    
-    query = 'SELECT titulo, resumen, fecha, link FROM informacion_relevante WHERE 1=1'
-    
+    source = request.args.get('source')
+
+    query = 'SELECT titulo, resumen, fecha, link, fuente FROM informacion_relevante WHERE 1=1'
+
+    # Filtrar por fecha
     if start_date:
         query += f" AND fecha >= '{start_date}'"
     if end_date:
         query += f" AND fecha <= '{end_date}'"
-    
+
+    # Filtrar por fuente
+    if source:
+        query += f" AND fuente = '{source}'"
+
     query += ' ORDER BY fecha DESC'
-    
+
     cursor.execute(query)
     data = cursor.fetchall()
-    
+
     response = []
     for row in data:
         item = {
             'titulo': row[0],
             'descripcion': row[1],
             'fecha': row[2],
-            'link': row[3]
+            'link': row[3],
+            'fuente': row[4]
         }
         response.append(item)
-    
+
     connection.close()
     return jsonify(response)
 
@@ -86,27 +93,38 @@ def get_data():
 def get_seguridad():
     connection = get_db_connection()
     cursor = connection.cursor()
+
     start_date = request.args.get('start_date')
     end_date = request.args.get('end_date')
-    query = 'SELECT titulo, resumen, fecha, link FROM seguridad WHERE 1=1'
+    source = request.args.get('source')
+
+    query = 'SELECT titulo, resumen, fecha, link, fuente FROM seguridad WHERE 1=1'
     
+    # Filtrar por fecha
     if start_date:
         query += f" AND fecha >= '{start_date}'"
     if end_date:
         query += f" AND fecha <= '{end_date}'"
+
+    # Filtrar por fuente
+    if source:
+        query += f" AND fuente = '{source}'"
+
     query += ' ORDER BY fecha DESC'
     cursor.execute(query)
     data = cursor.fetchall()
+
     response = []
     for row in data:
         item = {
             'titulo': row[0],
             'descripcion': row[1],
             'fecha': row[2],
-            'link': row[3]
+            'link': row[3],
+            'fuente': row[4]
         }
         response.append(item)
-    
+
     connection.close()
     return jsonify(response)
 
@@ -115,27 +133,39 @@ def get_seguridad():
 def get_gobierno_mexico():
     connection = get_db_connection()
     cursor = connection.cursor()
+
     start_date = request.args.get('start_date')
     end_date = request.args.get('end_date')
-    query = 'SELECT titulo, resumen, fecha, link FROM gobierno_mexico WHERE 1=1'
-    
+    source = request.args.get('source')
+
+    query = 'SELECT titulo, resumen, fecha, link, fuente FROM gobierno_mexico WHERE 1=1'
+
+    # Filtrar por fecha
     if start_date:
         query += f" AND fecha >= '{start_date}'"
     if end_date:
         query += f" AND fecha <= '{end_date}'"
+
+    # Filtrar por fuente
+    if source:
+        query += f" AND fuente = '{source}'"
+
     query += ' ORDER BY fecha DESC'
+
     cursor.execute(query)
     data = cursor.fetchall()
+
     response = []
     for row in data:
         item = {
             'titulo': row[0],
             'descripcion': row[1],
             'fecha': row[2],
-            'link': row[3]
+            'link': row[3],
+            'fuente': row[4]
         }
         response.append(item)
-    
+
     connection.close()
     return jsonify(response)
 
@@ -144,27 +174,39 @@ def get_gobierno_mexico():
 def get_genero_opinion():
     connection = get_db_connection()
     cursor = connection.cursor()
+
     start_date = request.args.get('start_date')
     end_date = request.args.get('end_date')
-    query = 'SELECT titulo, resumen, fecha, link FROM genero_opinion WHERE 1=1'
-    
+    source = request.args.get('source')
+
+    query = 'SELECT titulo, resumen, fecha, link, fuente FROM genero_opinion WHERE 1=1'
+
+    # Filtrar por fecha
     if start_date:
         query += f" AND fecha >= '{start_date}'"
     if end_date:
         query += f" AND fecha <= '{end_date}'"
+
+    # Filtrar por fuente
+    if source:
+        query += f" AND fuente = '{source}'"
+
     query += ' ORDER BY fecha DESC'
+
     cursor.execute(query)
     data = cursor.fetchall()
+
     response = []
     for row in data:
         item = {
             'titulo': row[0],
             'descripcion': row[1],
             'fecha': row[2],
-            'link': row[3]
+            'link': row[3],
+            'fuente': row[4]
         }
         response.append(item)
-    
+
     connection.close()
     return jsonify(response)
 

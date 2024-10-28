@@ -10,7 +10,7 @@ import sys
 import io
 import logging
 sys.path.append('C:/Users/cheo_/LABS/NewsNav')
-from database import get_db_connection, exists_in_db_seguridad, insert_into_db_seguridad
+from database import get_db_connection, exists_in_db_gobierno_mexico, insert_into_db_gobierno_mexico
 
 # Configuración básica del logging
 logging.basicConfig(level=logging.INFO)
@@ -51,9 +51,9 @@ def insert_into_db(item):
     connection = get_db_connection()
     cursor = connection.cursor()
     
-    sql = """INSERT INTO seguridad (titulo, resumen, fecha, link, relevancia) 
-             VALUES (%s, %s, %s, %s, %s)"""
-    values = (item['title'], item['summary'], item['date'], item['link'], item['relevance'])
+    sql = """INSERT INTO gobierno_mexico (titulo, resumen, fecha, link, relevancia, fuente) 
+             VALUES (%s, %s, %s, %s, %s, %s)"""
+    values = (item['title'], item['summary'], item['date'], item['link'], item['relevance'], item['source'])
     
     try:
         cursor.execute(sql, values)
@@ -71,7 +71,7 @@ def extract_data(existing_titles):
 
     all_data = []
     urls = [
-        'https://ncscampeche.com/local/?qtajax=true&qtajax=true'
+        'https://ncscampeche.com/nacional/?qtajax=true'
     ]
 
     headers = {
@@ -171,6 +171,7 @@ def preprocess_data(data):
         item['description'] = item['description'].upper()
         item['date'] = item['date'].upper()
         item['link'] = item['link'].lower()
+        item['source'] = "static/images/logos/NCSLogo.png"
         processed_data.append(item)
 
     return processed_data
@@ -182,7 +183,7 @@ def detect_keywords(description, keywords):
 # Clasificar Datos
 def classify_data(data):
     logging.info("Clasificando la relevancia de las noticias...")
-    keywords = ['delito federal', 'narcotráfico', 'tráfico de drogas', 'crimen organizado', 'lavado de dinero', 'corrupción', 'delitos fiscales', 'contrabando', 'fraude fiscal', 'evasión fiscal', 'delitos electorales', 'delincuencia organizada', 'tráfico de armas', 'secuestro', 'trata de personas', 'terrorismo', 'delitos contra la salud', 'falsificación de documentos', 'fraude', 'delitos financieros', 'delitos ambientales', 'crimen transnacional', 'extorsión', 'homicidio', 'robo de combustible', 'huachicol', 'delitos informáticos', 'hackeo', 'piratería','ejecución', 'homicidio sicarial', 'disparos', 'grupo delictivo', 'usura', 'amenaza de deudores', 'desapariciones', 'menores desaparecidos', 'localización de desaparecidos', 'búsqueda de desaparecidos', 'movilización policial', 'detención', 'orden de aprehensión', 'operativo policial', 'sustancias ilegales', 'armas de fuego', 'detenido', 'investigación de delitos', 'alto impacto'] # Palabras clave
+    keywords = ['Claudia Sheinbaum', 'presidenta', 'gobierno', 'acciones', 'declaraciones', 'políticas públicas', 'proyectos', 'iniciativas', 'reformas', 'inversiones', 'reuniones', 'colaboraciones', 'programas sociales', 'anuncios', 'investigaciones', 'estrategias', 'desarrollo', 'mejoras', 'seguridad', 'infraestructura', 'promesas', 'resultados', 'evaluaciones', 'sesiones', 'reuniones de trabajo', 'discursos', 'convocatorias', 'rescate', 'ferrocarriles', 'sexenio', 'construcción', 'Tren México-Pachuca', 'circulación', 'huracán', 'categoría 4', 'lluvias', 'inseguridad', 'asesinato', 'alcalde', 'Chilpancingo', 'detenciones', 'selección de candidatos', 'campañas', 'votación', 'elección popular', 'Poder Judicial', 'líder empresarial', 'Consejo Coordinador Empresarial', 'propuestas', 'relaciones internacionales'] # Palabras clave
     
     classified_data = []
     for item in data:
@@ -220,8 +221,8 @@ def present_results(data):
             logging.info(f"Importancia: {item['relevance']}")
 
             # Verificar si el título ya existe antes de insertar
-            if not exists_in_db_seguridad(item['title']):
-                insert_into_db_seguridad(item)
+            if not exists_in_db_gobierno_mexico(item['title']):
+                insert_into_db_gobierno_mexico(item)
             else:
                 logging.info(f"El título ya existe en la base de datos: {item['title']}")
 

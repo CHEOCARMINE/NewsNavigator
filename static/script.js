@@ -4,27 +4,28 @@ document.getElementById('filter-form').addEventListener('submit', function(event
 
     const startDate = document.getElementById('start-date').value;
     const endDate = document.getElementById('end-date').value;
+    const source = document.getElementById('source-select').value;
 
-    fetchData(startDate, endDate);
+    fetchData(startDate, endDate, source);
 });
 
 // Función para obtener los datos de la API
-function fetchData(startDate = '', endDate = '') {
+function fetchData(startDate = '', endDate = '', source= '') {
     let apiUrl;
 
     // Detectar en qué página estás
     switch (window.location.pathname) {
         case '/':
-            apiUrl = `/api/data?start_date=${startDate}&end_date=${endDate}`;  
+            apiUrl = `/api/data?start_date=${startDate}&end_date=${endDate}&source=${source}`;  
             break;
         case '/seguridad':
-            apiUrl = `/api/seguridad?start_date=${startDate}&end_date=${endDate}`;
+            apiUrl = `/api/seguridad?start_date=${startDate}&end_date=${endDate}&source=${source}`;
             break;
         case '/gobierno_mexico':
-            apiUrl = `/api/gobierno_mexico?start_date=${startDate}&end_date=${endDate}`;
+            apiUrl = `/api/gobierno_mexico?start_date=${startDate}&end_date=${endDate}&source=${source}`;
             break;
         case '/genero_opinion':
-            apiUrl = `/api/genero_opinion?start_date=${startDate}&end_date=${endDate}`;
+            apiUrl = `/api/genero_opinion?start_date=${startDate}&end_date=${endDate}&source=${source}`;
             break;
         default:
             console.error('Ruta no válida');
@@ -46,18 +47,22 @@ function fetchData(startDate = '', endDate = '') {
             data.forEach(item => {
                 const row = document.createElement('tr');
                 
+                //Titulo
                 const titleCell = document.createElement('td');
                 titleCell.textContent = item.titulo;
                 row.appendChild(titleCell);
                 
+                //Resumen
                 const summaryCell = document.createElement('td');
                 summaryCell.textContent = item.descripcion;
                 row.appendChild(summaryCell);
                 
+                //Fecha
                 const dateCell = document.createElement('td');
                 dateCell.textContent = item.fecha;
                 row.appendChild(dateCell);
                 
+                //Link
                 const linkCell = document.createElement('td');
                 const link = document.createElement('a');
                 link.href = item.link;
@@ -65,6 +70,15 @@ function fetchData(startDate = '', endDate = '') {
                 link.textContent = 'Ver más';
                 linkCell.appendChild(link);
                 row.appendChild(linkCell);
+
+                // Fuente
+                const sourceCell = document.createElement('td');
+                const img = document.createElement('img');
+                img.src = item.fuente; 
+                img.alt = 'Logo';
+                img.className = 'source-logo'; 
+                sourceCell.appendChild(img); 
+                row.appendChild(sourceCell); 
                 
                 tableBody.appendChild(row);
             });

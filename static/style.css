@@ -129,6 +129,12 @@ h1 {
     text-decoration: underline; 
 }
 
+#news-table img {
+    width: 50px;
+    height: auto;
+    max-width: 100%;
+}
+
 /* Estilos para el contenedor de acción */
 .action-container {
     display: flex; 
@@ -154,6 +160,27 @@ h1 {
 }
 
 .date-filter input[type="date"]:focus {
+    outline: none;
+    border-color: #BC955C;
+    box-shadow: 0 0 5px #BC955C;
+}
+
+/* Estilo para los cuadroes de seleccion de fuente */
+.date-filter select {
+    background-color: #6F7271;
+    color: #ffffff;
+    border: 1px solid #BC955C;
+    border-radius: 0.3em;
+    padding: 5px;
+    height: 2.5em;
+}
+
+.date-filter select option {
+    color: #ffffff;
+    opacity: 0.7;
+}
+
+.date-filter select:focus {
     outline: none;
     border-color: #BC955C;
     box-shadow: 0 0 5px #BC955C;

@@ -32,7 +32,8 @@
             <!-- Botón para ejecutar el scraping -->
             <button id="scrape-button">Ejecutar búsqueda</button>
     
-            <!-- Filtro por fecha -->
+            <!-- Filtro por fecha y fuente -->
+            <!-- Cuadro de fecha -->
             <div class="date-filter">
                 <form id="filter-form">
                     <label for="start-date">Desde:</label>
@@ -40,9 +41,17 @@
     
                     <label for="end-date">Hasta:</label>
                     <input type="date" id="end-date" name="end-date">
-    
+
+                    <!-- Cuadro de fuente -->
+                    <label for="source-select">Fuente:</label>
+                    <select id="source-select" name="source">
+                        <option value="">Todas</option>
+                        <option value="static/images/logos/ElFinancieroLogo.ico">Financiero</option>
+                        <option value="static/images/logos/NCSLogo.png">NCS</option>
+                    </select>
+
                     <!-- Botón de filtrar-->
-                    <button type="submit">Filtrar fecha</button>
+                    <button type="submit">Filtrar</button>
                 </form>
             </div>
         </div>
@@ -67,6 +76,7 @@
                 <th>Descripción</th>
                 <th>Fecha</th>
                 <th>Link</th>
+                <th>Fuente</th>
             </tr>
         </thead>
         <tbody id="news-table-body">

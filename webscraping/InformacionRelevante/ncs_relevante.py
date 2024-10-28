@@ -10,7 +10,7 @@ import sys
 import io
 import logging
 sys.path.append('C:/Users/cheo_/LABS/NewsNav')
-from database import get_db_connection, exists_in_db_gobierno_mexico, insert_into_db_gobierno_mexico
+from database import get_db_connection, exists_in_db_informacion_relevante, insert_into_db_informacion_relevante
 
 # Configuración básica del logging
 logging.basicConfig(level=logging.INFO)
@@ -51,9 +51,9 @@ def insert_into_db(item):
     connection = get_db_connection()
     cursor = connection.cursor()
     
-    sql = """INSERT INTO gobierno_mexico (titulo, resumen, fecha, link, relevancia) 
-             VALUES (%s, %s, %s, %s, %s)"""
-    values = (item['title'], item['summary'], item['date'], item['link'], item['relevance'])
+    sql = """INSERT INTO informacion_relevante (titulo, resumen, fecha, link, relevancia, fuente) 
+             VALUES (%s, %s, %s, %s, %s, %s)"""
+    values = (item['title'], item['summary'], item['date'], item['link'], item['relevance'], item['source'])
     
     try:
         cursor.execute(sql, values)
@@ -71,7 +71,7 @@ def extract_data(existing_titles):
 
     all_data = []
     urls = [
-        'https://ncscampeche.com/nacional/?qtajax=true'
+        'https://ncscampeche.com/local/?qtajax=true&qtajax=true'
     ]
 
     headers = {
@@ -171,6 +171,7 @@ def preprocess_data(data):
         item['description'] = item['description'].upper()
         item['date'] = item['date'].upper()
         item['link'] = item['link'].lower()
+        item['source'] = "static/images/logos/NCSLogo.png"
         processed_data.append(item)
 
     return processed_data
@@ -182,7 +183,7 @@ def detect_keywords(description, keywords):
 # Clasificar Datos
 def classify_data(data):
     logging.info("Clasificando la relevancia de las noticias...")
-    keywords = ['Claudia Sheinbaum', 'presidenta', 'gobierno', 'acciones', 'declaraciones', 'políticas públicas', 'proyectos', 'iniciativas', 'reformas', 'inversiones', 'reuniones', 'colaboraciones', 'programas sociales', 'anuncios', 'investigaciones', 'estrategias', 'desarrollo', 'mejoras', 'seguridad', 'infraestructura', 'promesas', 'resultados', 'evaluaciones', 'sesiones', 'reuniones de trabajo', 'discursos', 'convocatorias', 'rescate', 'ferrocarriles', 'sexenio', 'construcción', 'Tren México-Pachuca', 'circulación', 'huracán', 'categoría 4', 'lluvias', 'inseguridad', 'asesinato', 'alcalde', 'Chilpancingo', 'detenciones', 'selección de candidatos', 'campañas', 'votación', 'elección popular', 'Poder Judicial', 'líder empresarial', 'Consejo Coordinador Empresarial', 'propuestas', 'relaciones internacionales'] # Palabras clave
+    keywords = ['marcha', 'protesta', 'bloqueo', 'huelga', 'paro', 'manifestación', 'movilización', 'resistencia', 'denuncia', 'inconformidad', 'queja', 'asamblea', 'sindicato', 'desastre', 'inundación', 'deslave', 'huracán', 'terremoto', 'evacuación', 'emergencia', 'corrupción', 'fraude', 'detención', 'conflicto', 'violencia', 'ataque', 'secuestro', 'extorsión', 'levantamiento', 'ocupación', 'bloqueo carretero', 'cierre de vialidad', 'aeropuerto bloqueado', 'caseta de peaje bloqueada', 'vía férrea bloqueada', 'proceso electoral interrumpido', 'demanda de apoyo', 'afectación gubernamental', 'protesta social', 'huelga del magisterio', 'universidad en paro', 'manifestación masiva', 'interrupción de servicio público', 'paralización de actividades', 'contingencia gubernamental', 'resistencia civil', 'atención a afectados', 'brigadas de ayuda', 'pescadores', 'campesinos', 'trabajadores','salud', 'estudiantes', 'comunidad indígena', 'defensa de tierras', 'protestas laborales', 'movimientos campesinos', 'comunidades afectadas', 'exigencia de derechos', 'lucha sindical', 'conflictos comunitarios', 'protesta por servicios públicos', 'economía local', 'grupo parlamentario', 'congreso del estado', 'censo de afectados', 'bienestar social', 'condiciones de vida', 'problemas de infraestructura', 'colapsos viales', 'comunicaciones interrumpidas', 'acciones preventivas', 'sindicato', 'maestros', 'estudiantes', 'pescadores', 'pensionados'] # Palabras clave
     
     classified_data = []
     for item in data:
@@ -218,10 +219,11 @@ def present_results(data):
             logging.info(f"Fecha: {item['date']}")
             logging.info(f"Link: {item['link']}")
             logging.info(f"Importancia: {item['relevance']}")
+            logging.info(f"Fuente: {item['source']}")
 
             # Verificar si el título ya existe antes de insertar
-            if not exists_in_db_gobierno_mexico(item['title']):
-                insert_into_db_gobierno_mexico(item)
+            if not exists_in_db_informacion_relevante(item['title']):
+                insert_into_db_informacion_relevante(item)
             else:
                 logging.info(f"El título ya existe en la base de datos: {item['title']}")
 

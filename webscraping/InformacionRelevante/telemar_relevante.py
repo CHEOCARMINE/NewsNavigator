@@ -28,7 +28,8 @@ sentiment_analyzer = pipeline('sentiment-analysis', model='distilbert-base-uncas
 locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')
 
 # Fecha Objetivo
-date = datetime.now().strftime("%d %B, %Y")
+#date = datetime.now().strftime("%d %B, %Y")
+date= "25 octubre, 2024"
 target_date = datetime.strptime(date, "%d %B, %Y")
 
 # Truncar Descripciones
@@ -50,9 +51,9 @@ def insert_into_db(item):
     connection = get_db_connection()
     cursor = connection.cursor()
     
-    sql = """INSERT INTO informacion_relevante (titulo, resumen, fecha, link, relevancia) 
-             VALUES (%s, %s, %s, %s, %s)"""
-    values = (item['title'], item['summary'], item['date'], item['link'], item['relevance'])
+    sql = """INSERT INTO informacion_relevante (titulo, resumen, fecha, link, relevancia, fuente) 
+             VALUES (%s, %s, %s, %s, %s, %s)"""
+    values = (item['title'], item['summary'], item['date'], item['link'], item['relevance'], item['source'])
     
     try:
         cursor.execute(sql, values)
@@ -178,6 +179,7 @@ def preprocess_data(data):
         item['description'] = item['description'].upper()
         item['date'] = item['date'].upper()
         item['link'] = item['link'].lower()
+        item['source'] = "static/images/logos/TelemarLogo.png"
         processed_data.append(item)
 
     return processed_data
@@ -225,6 +227,7 @@ def present_results(data):
             logging.info(f"Fecha: {item['date']}")
             logging.info(f"Link: {item['link']}")
             logging.info(f"Importancia: {item['relevance']}")
+            logging.info(f"Fuente: {item['source']}")
 
             # Verificar si el título ya existe antes de insertar
             if not exists_in_db_informacion_relevante(item['title']):
