@@ -5,7 +5,7 @@ import spacy
 from transformers import pipeline
 import time
 import locale
-from datetime import datetime
+from datetime import datetime, timedelta
 import sys
 import io
 import logging
@@ -28,8 +28,9 @@ sentiment_analyzer = pipeline('sentiment-analysis', model='distilbert-base-uncas
 locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')
 
 # Fecha Objetivo
-date = datetime.now().strftime("%d %B, %Y")
-target_date = datetime.strptime(date, "%d %B, %Y")
+date = datetime.now() - timedelta(days=1)
+target_date = date.strftime("%B %d, %Y")
+formatted_target_date = datetime.strptime(target_date, "%B %d, %Y")
 
 # Truncar Descripciones
 def truncate_description(description):
@@ -70,14 +71,7 @@ def extract_data(existing_titles):
 
     all_data = []
     urls = [
-        "https://telemarcampeche.com/category/locales/",
-        "https://telemarcampeche.com/category/locales/page/2/"
-        "https://telemarcampeche.com/category/locales/page/3/",
-        "https://telemarcampeche.com/category/municipales/",
-        "https://telemarcampeche.com/category/municipales/page/2/",
-        "https://telemarcampeche.com/category/municipales/page/3/",
-        "https://telemarcampeche.com/category/expediente/",
-        "https://telemarcampeche.com/category/expediente/page/2/"	
+        'https://ncscampeche.com/local/?qtajax=true&qtajax=true'
     ]
 
     headers = {
@@ -94,73 +88,72 @@ def extract_data(existing_titles):
             soup = BeautifulSoup(response.text, 'html.parser')
             
             # Buscar el contenedor de las noticias
-            container = soup.find('div', class_="cm-posts cm-layout-2 cm-layout-2-style-1 col-2")
+            container = soup.find('div', class_='elementor-posts-container')
             if not container:
                 logging.info(f"No se encontró el contenedor principal en {url}")
                 continue
 
             # Buscar las noticias
-            articles = container.find_all('article')
+            articles = container.find_all('article', class_='elementor-post')
 
             for article in articles:
-                title_div = article.find('h2', class_='cm-entry-title')
-                title = title_div.find('a').text.strip() if title_div else "No title found"
-                
-                # Filtrar el titulo duplicados
-                if title in existing_titles:
-                    logging.info(f"Noticia duplicada encontrada: {title}")
-                    continue
-
-                existing_titles.add(title)
-
-                # Extraer la fecha de la noticia
-                date_span = article.find('time', class_='entry-date')
-                date = date_span.text.strip() if date_span else "No date found" 
-
-                # Convertir la fecha a un objeto datetime
-                try:
-                    article_date = datetime.strptime(date, "%d %B, %Y")
-                except ValueError:
-                    logging.info(f"Formato de fecha no reconocido: {date}")
-                    continue
-
-                formatted_date = article_date.strftime("%Y-%m-%d")
-
-                # Filtrar noticias según la fecha objetivo
-                if article_date != target_date:
-                    logging.info(f"Noticia fuera de la fecha objetivo: {title} - {date}")
-                    continue
-
                 # Extraer el enlace de la noticia
-                link_div = article.find('h2', class_='cm-entry-title')
-                link = link_div.find('a').get('href') if link_div else "No link found"
+                title_tag = article.find('a', class_='elementor-post__thumbnail__link')
+                link = title_tag.get('href') if title_tag else "No link found"
 
-                # Extraer la descripción completa
+                # Evitar duplicados
+                if link in existing_titles:
+                    logging.info(f"Noticia duplicada encontrada: {link}")
+                    continue
+
+                existing_titles.add(link)
+
+                # Extraer detalles de la noticia desde el enlace
                 try:
                     link_response = requests.get(link, headers=headers)
                     link_response.raise_for_status()
                     link_soup = BeautifulSoup(link_response.text, 'html.parser')
-                    description_div = link_soup.find('div', class_='cm-entry-summary')
+
+                    # Extraer fecha de la noticia
+                    date_tag = link_soup.find('h4', class_='qt-subtitle')
+                    date_text = date_tag.text.strip() if date_tag else "No date found"
+
+                    # Convertir fecha al formato necesario
+                    date_text = date_text.split(" el ")[-1].strip()
+                    try:
+                        article_date = datetime.strptime(date_text, "%B %d, %Y")
+                        formatted_date = article_date.strftime("%Y-%m-%d")
+                    except ValueError:
+                        logging.info(f"Formato de fecha no reconocido: {date_text}")
+                        continue
+
+                    # Título
+                    title = link_soup.find('h1').text.strip() if link_soup.find('h1') else "No title found"
+
+                    # Descripción
+                    description_div = link_soup.find('div', class_='qt-the-content')
                     description = " ".join([p.text.strip() for p in description_div.find_all('p')]) if description_div else "No description found"
 
+                    # Imprimir detalles de la noticia
+                    logging.info(f"Title: {title}")
+                    logging.info(f"Description: {description}")
+                    logging.info(f"Date: {formatted_date}")
+                    logging.info(f"Link: {link}")
+
+                    # Agregar noticia a los datos recopilados
+                    news_item = {
+                        'title': title,
+                        'description': description,
+                        'date': formatted_date,
+                        'link': link
+                    }
+                    all_data.append(news_item)
+
                 except requests.exceptions.RequestException as e:
-                    description = "No description found"
-
-                # Imprimir detalles de la noticia
-                logging.info(f"Title: {title}")
-                logging.info(f"Description: {description}")
-                logging.info(f"Date: {date}")
-                logging.info(f"Link: {link}")
-
-                # Lista de datos recopilados
-                news_item = {
-                    'title': title,
-                    'description': description,
-                    'date': formatted_date,
-                    'link': link
-                }
-                all_data.append(news_item)
+                    logging.info(f"No se pudo acceder al enlace: {link} - {e}")
+                    continue
             
+            # Esperar para evitar sobrecargar el servidor
             time.sleep(2)
 
         except requests.exceptions.RequestException as e:
@@ -189,7 +182,7 @@ def detect_keywords(description, keywords):
 # Clasificar Datos
 def classify_data(data):
     logging.info("Clasificando la relevancia de las noticias...")
-    keywords = [ 'delito federal', 'narcotráfico', 'tráfico de drogas', 'crimen organizado', 'lavado de dinero', 'corrupción', 'delitos fiscales', 'contrabando', 'fraude fiscal', 'evasión fiscal', 'delitos electorales', 'delincuencia organizada', 'tráfico de armas', 'secuestro', 'trata de personas', 'terrorismo', 'delitos contra la salud', 'falsificación de documentos', 'fraude', 'delitos financieros', 'delitos ambientales', 'crimen transnacional', 'extorsión', 'homicidio', 'robo de combustible', 'huachicol', 'delitos informáticos', 'hackeo', 'piratería','ejecución', 'homicidio sicarial', 'disparos', 'grupo delictivo', 'usura', 'amenaza de deudores', 'desapariciones', 'menores desaparecidos', 'localización de desaparecidos', 'búsqueda de desaparecidos', 'movilización policial', 'detención', 'orden de aprehensión', 'operativo policial', 'sustancias ilegales', 'armas de fuego', 'detenido', 'investigación de delitos', 'alto impacto']# Palabras clave
+    keywords = ['delito federal', 'narcotráfico', 'tráfico de drogas', 'crimen organizado', 'lavado de dinero', 'corrupción', 'delitos fiscales', 'contrabando', 'fraude fiscal', 'evasión fiscal', 'delitos electorales', 'delincuencia organizada', 'tráfico de armas', 'secuestro', 'trata de personas', 'terrorismo', 'delitos contra la salud', 'falsificación de documentos', 'fraude', 'delitos financieros', 'delitos ambientales', 'crimen transnacional', 'extorsión', 'homicidio', 'robo de combustible', 'huachicol', 'delitos informáticos', 'hackeo', 'piratería','ejecución', 'homicidio sicarial', 'disparos', 'grupo delictivo', 'usura', 'amenaza de deudores', 'desapariciones', 'menores desaparecidos', 'localización de desaparecidos', 'búsqueda de desaparecidos', 'movilización policial', 'detención', 'orden de aprehensión', 'operativo policial', 'sustancias ilegales', 'armas de fuego', 'detenido', 'investigación de delitos', 'alto impacto'] # Palabras clave
     
     classified_data = []
     for item in data:

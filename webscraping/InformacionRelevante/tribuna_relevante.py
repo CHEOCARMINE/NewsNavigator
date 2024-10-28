@@ -184,7 +184,7 @@ def preprocess_data(data):
         item['title'] = item['title'].upper()
         item['description'] = item['description'].upper()
         item['date'] = item['date'].upper()
-        item['link'] = item['link'].upper()
+        item['link'] = item['link'].lower()
         processed_data.append(item)
 
     return processed_data

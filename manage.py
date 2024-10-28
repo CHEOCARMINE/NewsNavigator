@@ -47,7 +47,7 @@ def gobierno_mexico():
 def genero_opinion():
     return render_template('genero_opinion.html') 
 
-# Rutas para obtener datos en formato JSON
+# Rutas para obtener datos en formato JSON "informacion_relevante"
 @app.route('/api/data', methods=['GET'])
 def get_data():
     connection = get_db_connection()
@@ -68,6 +68,93 @@ def get_data():
     cursor.execute(query)
     data = cursor.fetchall()
     
+    response = []
+    for row in data:
+        item = {
+            'titulo': row[0],
+            'descripcion': row[1],
+            'fecha': row[2],
+            'link': row[3]
+        }
+        response.append(item)
+    
+    connection.close()
+    return jsonify(response)
+
+# Rutas para obtener datos en formato JSON "seguridad" 
+@app.route('/api/seguridad', methods=['GET'])
+def get_seguridad():
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+    query = 'SELECT titulo, resumen, fecha, link FROM seguridad WHERE 1=1'
+    
+    if start_date:
+        query += f" AND fecha >= '{start_date}'"
+    if end_date:
+        query += f" AND fecha <= '{end_date}'"
+    query += ' ORDER BY fecha DESC'
+    cursor.execute(query)
+    data = cursor.fetchall()
+    response = []
+    for row in data:
+        item = {
+            'titulo': row[0],
+            'descripcion': row[1],
+            'fecha': row[2],
+            'link': row[3]
+        }
+        response.append(item)
+    
+    connection.close()
+    return jsonify(response)
+
+# Rutas para obtener datos en formato JSON "gobierno_mexico"
+@app.route('/api/gobierno_mexico', methods=['GET'])
+def get_gobierno_mexico():
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+    query = 'SELECT titulo, resumen, fecha, link FROM gobierno_mexico WHERE 1=1'
+    
+    if start_date:
+        query += f" AND fecha >= '{start_date}'"
+    if end_date:
+        query += f" AND fecha <= '{end_date}'"
+    query += ' ORDER BY fecha DESC'
+    cursor.execute(query)
+    data = cursor.fetchall()
+    response = []
+    for row in data:
+        item = {
+            'titulo': row[0],
+            'descripcion': row[1],
+            'fecha': row[2],
+            'link': row[3]
+        }
+        response.append(item)
+    
+    connection.close()
+    return jsonify(response)
+
+# Rutas para obtener datos en formato JSON "genero_opinion"
+@app.route('/api/genero_opinion', methods=['GET'])
+def get_genero_opinion():
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+    query = 'SELECT titulo, resumen, fecha, link FROM genero_opinion WHERE 1=1'
+    
+    if start_date:
+        query += f" AND fecha >= '{start_date}'"
+    if end_date:
+        query += f" AND fecha <= '{end_date}'"
+    query += ' ORDER BY fecha DESC'
+    cursor.execute(query)
+    data = cursor.fetchall()
     response = []
     for row in data:
         item = {
@@ -160,7 +247,7 @@ def logout():
 @login_requerido
 @admin_requerido
 def admin_dashboard():
-    usuarios = obtener_usuarios()  # Llama a la función para obtener la lista de usuarios
+    usuarios = obtener_usuarios() 
 
     if request.method == 'POST':
         if 'registrar' in request.form:
@@ -177,14 +264,14 @@ def admin_dashboard():
         elif 'modificar' in request.form:
             usuario_id = request.form['usuario_id']
             nuevo_usuario = request.form['nuevo_usuario']
-            nueva_contraseña = request.form['nueva_contraseña']  # Obtenemos también la nueva contraseña
+            nueva_contraseña = request.form['nueva_contraseña']  
             nuevo_rol = request.form['nuevo_rol']
             
             # Verificamos si la nueva contraseña no está vacía antes de modificar
             if nueva_contraseña:
                 modificar_usuario(usuario_id, nuevo_usuario, nueva_contraseña, nuevo_rol)
             else:
-                modificar_usuario(usuario_id, nuevo_usuario, None, nuevo_rol)  # Si no hay nueva contraseña, no se modifica
+                modificar_usuario(usuario_id, nuevo_usuario, None, nuevo_rol)  
             
             flash("Usuario modificado con éxito.", "success")
 
@@ -193,7 +280,7 @@ def admin_dashboard():
             eliminar_usuario(usuario_id)
             flash("Usuario eliminado con éxito.", "success")
         
-        return redirect(url_for('admin_dashboard'))  # Redirige después de registrar/modificar/eliminar el usuario
+        return redirect(url_for('admin_dashboard'))  
     
     return render_template('admin_dashboard.html', usuarios=usuarios)
 
@@ -201,7 +288,7 @@ def admin_dashboard():
 def obtener_usuarios():
     connection = get_db_connection()
     cursor = connection.cursor()
-    cursor.execute("SELECT id, usuario, rol FROM usuarios")  # Asegúrate de incluir el ID del usuario
+    cursor.execute("SELECT id, usuario, rol FROM usuarios")  
     usuarios = cursor.fetchall()
     connection.close()
     return usuarios
