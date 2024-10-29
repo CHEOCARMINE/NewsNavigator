@@ -349,5 +349,5 @@ def genero_opinion():
 if __name__ == '__main__':
     with open(os.devnull, 'w') as f:
         sys.stdout = f  
-        app.run(debug=True)
+        app.run(debug=False)
     sys.stdout = sys.__stdout__
