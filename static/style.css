@@ -111,12 +111,14 @@ h1 {
     padding: 10px; 
     border-bottom: 1px solid #ddd; 
     color: #000000;
-    font-family: 'Geomanist', sans-serif; 
+    font-family: 'Geomanist', sans-serif;
+    border: 3px solid #BC955C; 
 }
 
 /* Estilo alternativo para filas */
 #news-table tr:nth-child(even) {
-    background-color: #98989A; 
+    background-color: #98989A;
+    border: 3px solid #BC955C; 
 }
 
 /* Estilo para los enlaces en la tabla */

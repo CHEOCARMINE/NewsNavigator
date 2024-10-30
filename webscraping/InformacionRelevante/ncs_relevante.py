@@ -128,7 +128,7 @@ def extract_data(existing_titles):
                         continue
 
                     # Título
-                    title = link_soup.find('h1').text.strip() if link_soup.find('h1') else "No title found"
+                    title = link_soup.find('div', class_='qt-the-content').find('h1').text.strip() if link_soup.find('div', class_='qt-the-content') else "No title found"
 
                     # Descripción
                     description_div = link_soup.find('div', class_='qt-the-content')
@@ -167,9 +167,9 @@ def preprocess_data(data):
     processed_data = []
 
     for item in data:
-        item['title'] = item['title'].upper()
-        item['description'] = item['description'].upper()
-        item['date'] = item['date'].upper()
+        item['title'] = item['title'].capitalize()
+        item['description'] = '. '.join(sentence.capitalize() for sentence in item['description'].split('. '))
+        item['date'] = item['date'].capitalize()
         item['link'] = item['link'].lower()
         item['source'] = "static/images/logos/NCSLogo.png"
         processed_data.append(item)

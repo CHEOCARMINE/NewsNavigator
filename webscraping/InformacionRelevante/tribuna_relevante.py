@@ -181,9 +181,9 @@ def preprocess_data(data):
     processed_data = []
 
     for item in data:
-        item['title'] = item['title'].upper()
-        item['description'] = item['description'].upper()
-        item['date'] = item['date'].upper()
+        item['title'] = item['title'].capitalize()
+        item['description'] = '. '.join(sentence.capitalize() for sentence in item['description'].split('. '))
+        item['date'] = item['date'].capitalize()
         item['link'] = item['link'].lower()
         item['source'] = "static/images/logos/TribunaLogo.png"
         processed_data.append(item)
