@@ -28,8 +28,7 @@ sentiment_analyzer = pipeline('sentiment-analysis', model='distilbert-base-uncas
 locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')
 
 # Fecha Objetivo
-#date = datetime.now().strftime("%d %B, %Y")
-date= "25 octubre, 2024"
+date = datetime.now().strftime("%d %B, %Y")
 target_date = datetime.strptime(date, "%d %B, %Y")
 
 # Truncar Descripciones
