@@ -25,11 +25,13 @@ body {
     display: flex; 
     justify-content: space-between; 
     align-items: center; 
-    padding: 5px; 
+    padding: 5px;
+    flex-wrap: wrap; 
 }
 
 h1 {
-    font-size: 2.5rem;  
+    font-size: 2.5rem;
+    flex: 1;  
 }
 
 .logo {
@@ -76,6 +78,11 @@ h1 {
     transition: color 0.3s ease;
 }
 
+.nav-list a:focus {
+    outline: 2px solid #BC955C;
+    outline-offset: 2px; 
+}
+
 /* Media Query para pantallas pequeñas */
 @media (max-width: 600px) {
     .nav-list {
@@ -84,8 +91,26 @@ h1 {
     }
     
     .nav-list a {
-        font-size: 1rem; 
+        font-size: 1.1rem; 
         margin: 5px 0; 
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+
+    .action-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .date-filter {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    button {
+        width: 100%;
     }
 }
 
@@ -124,7 +149,8 @@ h1 {
 /* Estilo para los enlaces en la tabla */
 #news-table a {
     color: #3498DB; 
-    text-decoration: none; 
+    text-decoration: none;
+    transition: color 0.3s ease; 
 }
 
 #news-table a:hover {
@@ -143,10 +169,16 @@ h1 {
     justify-content: center; 
     align-items: center; 
     margin: 20px 0; 
-    gap: 20px; 
+    gap: 20px;
+    flex-wrap: wrap; 
 }
 
 /* Estilos para los cuadros de selección de fecha */
+.date-filter {
+    display: flex;
+    gap: 10px;
+}
+
 .date-filter input[type="date"] {
     background-color: #6F7271;
     color: #ffffff;
@@ -193,7 +225,7 @@ button {
     width: 7em; 
     height: 2.5em; 
     border-radius: 30em;
-    font-size: 14px; 
+    font-size: 0.875rem; 
     font-family: inherit;
     border: none;
     position: relative;
@@ -201,6 +233,7 @@ button {
     z-index: 1;
     background-color: #621132;
     color: #ffffff;
+    transition: background-color 0.3s ease;
 }
 
 button::before {
