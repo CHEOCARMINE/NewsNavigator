@@ -43,7 +43,12 @@ h1 {
 }
 
 .title-noticias {
-    color: #ffffff;
+    color: #000000;
+    text-align: center;
+}
+
+h2 {
+    color:#000000;
     text-align: center;
 }
 

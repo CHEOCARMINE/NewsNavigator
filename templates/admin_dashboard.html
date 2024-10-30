@@ -51,42 +51,43 @@
             {% endif %}
         {% endwith %}
 
-<!-- Lista de Usuarios -->
-<h2>Lista de Usuarios</h2>
-<table>
-    <tr>
-        <th>Usuario</th>
-        <th>Rol</th>
-        <th>Acciones</th>
-    </tr>
-    {% for usuario in usuarios %}
-    <tr>
-        <td>{{ usuario[1] }}</td> 
-        <td>{{ usuario[2] }}</td> 
-        <td>
-            <div style="background-color: rgba(98, 17, 50, 0.8); padding: 10px; border-radius: 5px;"> 
-                <!-- Formulario para Modificar Usuario -->
-                <form method="POST" class="admin-form" style="display: flex; gap: 10px; align-items: center;"> 
-                    <input type="hidden" name="usuario_id" value="{{ usuario[0] }}">
-                    <input type="text" name="nuevo_usuario" placeholder="Nuevo Usuario" value="{{ usuario[1] }}" required>
-                    <input type="password" name="nueva_contraseña" placeholder="Nueva Contraseña">
-                    <select name="nuevo_rol" required>
-                        <option value="usuario" {% if usuario[2] == 'usuario' %}selected{% endif %}>Usuario</option>
-                        <option value="administrador" {% if usuario[2] == 'administrador' %}selected{% endif %}>Administrador</option>
-                    </select>
-                    <button type="submit" name="modificar">Modificar</button>
-                </form>
+        <!-- Lista de Usuarios -->
+        <h2>Lista de Usuarios</h2>
+        <table>
+            <tr>
+                <th>Usuario</th>
+                <th>Rol</th>
+                <th>Acciones</th>
+            </tr>
+            {% for usuario in usuarios %}
+            <tr>
+                <td>{{ usuario[1] }}</td> 
+                <td>{{ usuario[2] }}</td> 
+                <td>
+                    <div style="background-color: rgba(98, 17, 50, 0.8); padding: 10px; border-radius: 5px;"> 
+                        <!-- Formulario para Modificar Usuario -->
+                        <form method="POST" class="admin-form" style="display: flex; gap: 10px; align-items: center;"> 
+                            <input type="hidden" name="usuario_id" value="{{ usuario[0] }}">
+                            <input type="text" name="nuevo_usuario" placeholder="Nuevo Usuario" value="{{ usuario[1] }}" required>
+                            <input type="password" name="nueva_contraseña" placeholder="Nueva Contraseña">
+                            <select name="nuevo_rol" required>
+                                <option value="usuario" {% if usuario[2] == 'usuario' %}selected{% endif %}>Usuario</option>
+                                <option value="administrador" {% if usuario[2] == 'administrador' %}selected{% endif %}>Administrador</option>
+                            </select>
+                            <button type="submit" name="modificar">Modificar</button>
+                        </form>
 
-                <!-- Formulario para Eliminar Usuario -->
-                <form method="POST" class="admin-form" style="display: flex; gap: 10px; align-items: center;">
-                    <input type="hidden" name="usuario_id_eliminar" value="{{ usuario[0] }}"> 
-                    <button type="submit" name="eliminar" onclick="return confirm('¿Estás seguro de que deseas eliminar este usuario?');">Eliminar</button>
-                </form>
-            </div>
-        </td>
-    </tr>
-    {% endfor %}
-</table>
+                        <!-- Formulario para Eliminar Usuario -->
+                        <form method="POST" class="admin-form" style="display: flex; gap: 10px; align-items: center;">
+                            <input type="hidden" name="usuario_id_eliminar" value="{{ usuario[0] }}"> 
+                            <button type="submit" name="eliminar" onclick="return confirm('¿Estás seguro de que deseas eliminar este usuario?');">Eliminar</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
 
 </body>
 </html>

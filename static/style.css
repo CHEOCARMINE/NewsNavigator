@@ -43,7 +43,7 @@ h1 {
 }
 
 .title-noticias {
-    color: #ffffff;
+    color: #000000;
     text-align: center;
 }
 
@@ -229,7 +229,7 @@ button:hover::before {
 }
 
 .loading-text {
-    color: white;
+    color: rgb(0, 0, 0);
     font-size: 14pt;
     font-weight: 600;
     margin-left: 10px;

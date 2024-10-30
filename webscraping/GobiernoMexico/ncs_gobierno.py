@@ -219,6 +219,7 @@ def present_results(data):
             logging.info(f"Fecha: {item['date']}")
             logging.info(f"Link: {item['link']}")
             logging.info(f"Importancia: {item['relevance']}")
+            logging.info(f"Fuente: {item['source']}")
 
             # Verificar si el título ya existe antes de insertar
             if not exists_in_db_gobierno_mexico(item['title']):
