@@ -7,9 +7,10 @@ import time
 import locale
 from datetime import datetime
 import sys
+import os
 import io
 import logging
-sys.path.append('C:/Users/cheo_/LABS/NewsNav')
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
 from database import get_db_connection, exists_in_db_seguridad, insert_into_db_seguridad
 
 # Configuración básica del logging
