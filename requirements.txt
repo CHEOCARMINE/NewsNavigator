@@ -23,6 +23,7 @@ crontab==1.0.1
 cryptography==43.0.3
 cymem==2.0.8
 en_core_web_sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl#sha256=1932429db727d4bff3deed6b34cfc05df17794f4a52eeb26cf8928f7c1a0fb85
+et_xmlfile==2.0.0
 filelock==3.16.1
 Flask==3.0.3
 Flask-Bcrypt==1.0.1
@@ -51,7 +52,9 @@ mysql-connector-python==9.0.0
 networkx==3.4
 nltk==3.9.1
 numpy==2.0.2
+openpyxl==3.1.5
 packaging==24.1
+pandas==2.2.3
 preshed==3.0.9
 prompt_toolkit==3.0.48
 pycparser==2.22

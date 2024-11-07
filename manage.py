@@ -1,9 +1,10 @@
 from dotenv import load_dotenv
-from flask import Flask, jsonify, render_template, request, Response, redirect, url_for, session, flash
+from flask import Flask, jsonify, render_template, request, Response, redirect, url_for, session, flash, send_file
 from database import get_db_connection, registrar_usuario, autenticar_usuario, existe_usuario, modificar_usuario, eliminar_usuario
 from webscraping import run_scraping
 from apscheduler.schedulers.background import BackgroundScheduler  
 from functools import wraps
+import pandas as pd
 import os
 import sys
 import io
@@ -221,7 +222,83 @@ def scraping():
         return jsonify({'status': 'success', 'message': f'Búsqueda para la categoría {category} completada.'})
     except Exception as e:
         logging.error(f'Error durante la búsqueda: {str(e)}')
-        return jsonify({'status': 'error', 'message': str(e)}), 500
+        return jsonify({'status': 'error', 'message': str(e)}), 500  
+
+# Ruta para exportar a Excel
+@app.route('/exportar_a_excel', methods=['GET'])
+def exportar_a_excel():
+    fecha_desde = request.args.get('fecha_desde')
+    fecha_hasta = request.args.get('fecha_hasta')
+
+    connection = get_db_connection()
+    cursor = connection.cursor()
+
+    # Consulta para 'informacion_relevante'
+    query_informacion_relevante = 'SELECT titulo, resumen, fecha, link FROM informacion_relevante WHERE 1=1'
+    if fecha_desde:
+        query_informacion_relevante += f" AND fecha >= '{fecha_desde}'"
+    if fecha_hasta:
+        query_informacion_relevante += f" AND fecha <= '{fecha_hasta}'"
+    query_informacion_relevante += ' ORDER BY fecha DESC'
+    
+    cursor.execute(query_informacion_relevante)
+    data_informacion_relevante = cursor.fetchall()
+
+    # Consulta para 'seguridad'
+    query_seguridad = 'SELECT titulo, resumen, fecha, link FROM seguridad WHERE 1=1'
+    if fecha_desde:
+        query_seguridad += f" AND fecha >= '{fecha_desde}'"
+    if fecha_hasta:
+        query_seguridad += f" AND fecha <= '{fecha_hasta}'"
+    query_seguridad += ' ORDER BY fecha DESC'
+    
+    cursor.execute(query_seguridad)
+    data_seguridad = cursor.fetchall()
+
+    # Consulta para 'gobierno_mexico'
+    query_gobierno_mexico = 'SELECT titulo, resumen, fecha, link FROM gobierno_mexico WHERE 1=1'
+    if fecha_desde:
+        query_gobierno_mexico += f" AND fecha >= '{fecha_desde}'"
+    if fecha_hasta:
+        query_gobierno_mexico += f" AND fecha <= '{fecha_hasta}'"
+    query_gobierno_mexico += ' ORDER BY fecha DESC'
+    
+    cursor.execute(query_gobierno_mexico)
+    data_gobierno_mexico = cursor.fetchall()
+
+    # Consulta para 'genero_opinion'
+    query_genero_opinion = 'SELECT titulo, resumen, fecha, link FROM genero_opinion WHERE 1=1'
+    if fecha_desde:
+        query_genero_opinion += f" AND fecha >= '{fecha_desde}'"
+    if fecha_hasta:
+        query_genero_opinion += f" AND fecha <= '{fecha_hasta}'"
+    query_genero_opinion += ' ORDER BY fecha DESC'
+    
+    cursor.execute(query_genero_opinion)
+    data_genero_opinion = cursor.fetchall()
+
+    # Crear DataFrames con los datos
+    df_informacion_relevante = pd.DataFrame(data_informacion_relevante, columns=['Título', 'Descripción', 'Fecha', 'Link'])
+    df_seguridad = pd.DataFrame(data_seguridad, columns=['Título', 'Descripción', 'Fecha', 'Link'])
+    df_gobierno_mexico = pd.DataFrame(data_gobierno_mexico, columns=['Título', 'Descripción', 'Fecha', 'Link'])
+    df_genero_opinion = pd.DataFrame(data_genero_opinion, columns=['Título', 'Descripción', 'Fecha', 'Link'])
+
+    # Crear el directorio temporal si no existe
+    temp_dir = os.path.join(os.getcwd(), 'tmp')  
+    os.makedirs(temp_dir, exist_ok=True)  
+    temp_path = os.path.join(temp_dir, 'reporte_completo.xlsx')
+
+    # Escribe múltiples hojas en un archivo Excel
+    with pd.ExcelWriter(temp_path, engine='openpyxl') as writer:
+        df_informacion_relevante.to_excel(writer, sheet_name='Información Relevante', index=False)
+        df_seguridad.to_excel(writer, sheet_name='Seguridad', index=False)
+        df_gobierno_mexico.to_excel(writer, sheet_name='Gobierno de México', index=False)
+        df_genero_opinion.to_excel(writer, sheet_name='Géneros de Opinión', index=False)
+
+    connection.close()
+
+    # Devolver el archivo Excel como respuesta
+    return send_file(temp_path, as_attachment=True, download_name='reporte_completo.xlsx')
 
 # Decorador para requerir autenticación en ciertas rutas
 def login_requerido(f):

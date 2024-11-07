@@ -8,3 +8,5 @@ venv/
 .vs/
 .DS_Store
 Thumbs.db
+/tmp/
+*.db

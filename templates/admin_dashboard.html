@@ -28,6 +28,17 @@
     <div class="container">
         <h1 class="title-noticias">Panel Administrador</h1>
 
+        <h2>Exprotar resultados</h2>
+        <form action="{{ url_for('exportar_a_excel') }}" method="get" class="date-filter">
+            <label for="fecha_desde">Fecha desde:</label>
+            <input type="date" name="fecha_desde" id="fecha_desde" required>
+            
+            <label for="fecha_hasta">Fecha hasta:</label>
+            <input type="date" name="fecha_hasta" id="fecha_hasta" required>
+            
+            <button type="submit">Exportar a Excel</button>
+        </form>        
+
         <!-- Registro de Usuario -->
         <h2>Registrar Usuario</h2>
         <form method="POST">

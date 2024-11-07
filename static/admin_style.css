@@ -261,3 +261,54 @@ table tr:nth-child(even) {
     background-color: #f8d7da; 
     color: #721c24; 
 }
+
+/* Estilos para el formulario y los inputs de fecha */
+.date-filter {
+    display: flex;
+    gap: 10px;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.date-filter label {
+    font-size: 1em;
+    color: #ffffff;
+    margin-right: 10px;
+}
+
+.date-filter input[type="date"] {
+    background-color: #6F7271;
+    color: #ffffff;
+    border: 1px solid #BC955C;
+    border-radius: 0.3em;
+    padding: 5px;
+    height: 2.5em;
+}
+
+.date-filter input[type="date"]::placeholder {
+    color: #ffffff;
+    opacity: 0.7;
+}
+
+.date-filter input[type="date"]:focus {
+    outline: none;
+    border-color: #BC955C;
+    box-shadow: 0 0 5px #BC955C;
+}
+
+.date-filter button {
+    background-color: #BC955C;
+    color: #ffffff;
+    border: none;
+    border-radius: 5em;
+    padding: 8px 12px;
+    font-size: 0.9em;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.date-filter button:hover {
+    background-color: #9A7A4F;
+}
