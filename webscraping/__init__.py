@@ -1,6 +1,5 @@
 import logging
 
-from .GobiernoMexico import ncs_gobierno
 def run_scraping(category):
     
     if category == 'informacion_relevante':
@@ -13,8 +12,8 @@ def run_scraping(category):
         telemar_seguridad.scrape_data()
         tribuna_seguridad.scrape_data()
         ncs_seguridad.scrape_data()
-    elif category == 'gobierno_mexicano':
-        from .GobiernoMexico import telemar_gobierno, tribuna_gobierno
+    elif category == 'gobierno_mexico':
+        from .GobiernoMexico import telemar_gobierno, tribuna_gobierno, ncs_gobierno
         telemar_gobierno.scrape_data()
         tribuna_gobierno.scrape_data()
         ncs_gobierno.scrape_data()
