@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Administrador</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin_style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital@0;1&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <h1 class="title-newsnavigators">NewsNavigators</h1>
+        <img src="{{ url_for('static', filename='images/LogoGobernación.png') }}" alt="Escudo de Campeche" class="logo">
+    </header>
+
+    <nav class="navbar">
+        <ul class="nav-list">
+            <li><a href="{{ url_for('index') }}">INFORMACIÓN RELEVANTE</a></li>
+            <li><a href="{{ url_for('seguridad') }}">SEGURIDAD</a></li>
+            <li><a href="{{ url_for('gobierno_mexico') }}">GOBIERNO DE MÉXICO</a></li>
+            <li><a href="{{ url_for('genero_opinion') }}">GÉNEROS DE OPINIÓN</a></li>
+            {% if session.get('rol') == 'administrador' %}
+            <li><a href="{{ url_for('admin_dashboard') }}">PANEL ADMINISTRADOR</a></li>
+            {% endif %}
+            <li><a href="{{ url_for('logout') }}">CERRAR SESIÓN</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <h1 class="title-noticias">Panel Administrador</h1>
+
+        <h2>Exportar resultados</h2>
+        <form action="{{ url_for('exportar_a_excel') }}" method="get" class="date-filter">
+            <label for="fecha_desde">Fecha desde:</label>
+            <input type="date" name="fecha_desde" id="fecha_desde" min="2024-11-12" max="{{ current_date }}" required>
+            
+            <label for="fecha_hasta">Fecha hasta:</label>
+            <input type="date" name="fecha_hasta" id="fecha_hasta" min="2024-11-12" max="{{ current_date }}" required>
+            
+            <button type="submit">Exportar a Excel</button>
+        </form>        
+
+        <!-- Registro de Usuario -->
+        <h2>Registrar Usuario</h2>
+        <form method="POST">
+            <input type="text" name="usuario" placeholder="Usuario" required>
+            <input type="password" name="contraseña" placeholder="Contraseña" required>
+            <select name="rol" required>
+                <option value="usuario">Usuario</option>
+                <option value="administrador">Administrador</option>
+            </select>
+            <button type="submit" name="registrar">Registrar</button>
+        </form>
+
+        <!-- Mensajes Flash -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul class="flashes">
+                {% for category, message in messages %}
+                    <li class="{{ category }}">{{ message }}</li>
+                {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+
+        <!-- Lista de Usuarios -->
+        <h2>Lista de Usuarios</h2>
+        <table>
+            <tr>
+                <th>Usuario</th>
+                <th>Rol</th>
+                <th>Acciones</th>
+            </tr>
+            {% for usuario in usuarios %}
+            <tr>
+                <td>{{ usuario[1] }}</td> 
+                <td>{{ usuario[2] }}</td> 
+                <td>
+                    <div style="background-color: rgba(98, 17, 50, 0.8); padding: 10px; border-radius: 5px;"> 
+                        <!-- Formulario para Modificar Usuario -->
+                        <form method="POST" class="admin-form" style="display: flex; gap: 10px; align-items: center;"> 
+                            <input type="hidden" name="usuario_id" value="{{ usuario[0] }}">
+                            <input type="text" name="nuevo_usuario" placeholder="Nuevo Usuario" value="{{ usuario[1] }}" required>
+                            <input type="password" name="nueva_contraseña" placeholder="Nueva Contraseña">
+                            <select name="nuevo_rol" required>
+                                <option value="usuario" {% if usuario[2] == 'usuario' %}selected{% endif %}>Usuario</option>
+                                <option value="administrador" {% if usuario[2] == 'administrador' %}selected{% endif %}>Administrador</option>
+                            </select>
+                            <button type="submit" name="modificar">Modificar</button>
+                        </form>
+
+                        <!-- Formulario para Eliminar Usuario -->
+                        <form method="POST" class="admin-form" style="display: flex; gap: 10px; align-items: center;">
+                            <input type="hidden" name="usuario_id_eliminar" value="{{ usuario[0] }}"> 
+                            <button type="submit" name="eliminar" onclick="return confirm('¿Estás seguro de que deseas eliminar este usuario?');">Eliminar</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+</body>
+</html>

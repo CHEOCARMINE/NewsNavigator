@@ -1,0 +1,304 @@
+/* Reinicio de estilos y configuración básica */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Noto Sans', sans-serif;
+    background-color: #ffffff;
+}
+
+/* Estilos del encabezado */
+.header {
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    padding: 5px; 
+}
+
+h1 {
+    font-size: 2.5rem;  
+}
+
+.logo {
+    height: 60px; 
+    width: auto;
+    display: block;
+}
+
+.title-newsnavigators {
+    color: #BC955C;
+}
+
+.title-noticias {
+    color: #000000;
+    text-align: center;
+}
+
+h2 {
+    color:#000000;
+    text-align: center;
+}
+
+/* Estilos de la barra de navegación */
+.navbar {
+    background-color: #621132; 
+    padding: 1rem;
+}
+
+.nav-list {
+    list-style: none;
+    display: flex;
+    justify-content: center; 
+    flex-wrap: wrap; 
+}
+
+.nav-list li {
+    margin: 0 15px;
+}
+
+.nav-list a {
+    text-decoration: none;
+    color: #ffffff;
+    font-size: 1.2rem; 
+    font-weight: bold;
+}
+
+.nav-list a:hover {
+    color: #BC955C; 
+    transition: color 0.3s ease;
+}
+
+/* Media Query para pantallas pequeñas */
+@media (max-width: 600px) {
+    .nav-list {
+        flex-direction: column; 
+        align-items: center; 
+    }
+    
+    .nav-list a {
+        font-size: 1rem; 
+        margin: 5px 0; 
+    }
+}
+
+/* Estilos generales de la tabla */
+#news-table {
+    width: 100%; 
+    border-collapse: collapse; 
+    margin-top: 20px; 
+    text-align: left; 
+}
+
+/* Estilos para los encabezados de la tabla */
+#news-table th {
+    background-color: #621132; 
+    color: #ffffff; 
+    padding: 10px; 
+    border-bottom: 2px solid #ffffff;
+    font-family: 'Noto Sans', sans-serif; 
+}
+
+/* Estilos para las celdas de la tabla */
+#news-table td {
+    padding: 10px; 
+    border-bottom: 1px solid #ddd; 
+    color: #000000;
+    font-family: 'Noto Sans', sans-serif; 
+}
+
+/* Estilo alternativo para filas */
+#news-table tr:nth-child(even) {
+    background-color: #98989A; 
+}
+
+/* Estilos para los botones */
+button {
+    width: 7em; 
+    height: 2.5em; 
+    border-radius: 30em;
+    font-size: 14px; 
+    font-family: inherit;
+    border: none;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    background-color: #621132;
+    color: #ffffff;
+}
+
+button::before {
+    content: '';
+    width: 0;
+    height: 2.5em; 
+    border-radius: 30em;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-image: linear-gradient(to right, #BC955C 0%, #621132 100%);
+    transition: .5s ease;
+    display: block;
+    z-index: -1;
+}
+
+button:hover::before {
+    width: 100%; 
+}
+
+/* Admin */
+/* Estilos generales para los formularios */
+form {
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px; 
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+}
+
+/* Estilo de los encabezados de formularios */
+form h2 {
+    color: #BC955C; 
+    font-size: 1.8rem; 
+    margin-bottom: 15px; 
+}
+
+/* Estilos de los inputs en los formularios */
+form input[type="text"],
+form input[type="password"],
+form select {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0; 
+    border: 1px solid #BC955C; 
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.9); 
+    color: #000; 
+}
+
+/* Efecto al enfocarse en los inputs */
+form input[type="text"]:focus,
+form input[type="password"]:focus,
+form select:focus {
+    outline: none;
+    border-color: #ffffff; 
+    box-shadow: 0 0 5px #BC955C; 
+}
+
+/* Estilo de botones */
+form button {
+    width: 100%; 
+    padding: 10px;
+    background-color: #621132; 
+    color: #ffffff; 
+    border: none;
+    border-radius: 30em;
+    cursor: pointer; 
+    transition: background-color 0.3s ease; 
+    margin-top: 10px; 
+}
+
+form button:hover {
+    background-color: #621132; 
+}
+
+/* Estilos para la lista de usuarios */
+table {
+    width: 100%; 
+    border-collapse: collapse; 
+    margin-top: 20px; 
+}
+
+table th,
+table td {
+    padding: 10px; 
+    text-align: left; 
+}
+
+table th {
+    background-color: #621132; 
+    color: #ffffff; 
+}
+
+table tr:nth-child(even) {
+    background-color: #98989A;
+}
+
+/* Estilo de mensajes flash */
+.flashes {
+    list-style: none; 
+    padding: 10px; 
+    margin: 10px 0; 
+    border-radius: 5px; 
+}
+
+.flashes li {
+    margin: 5px 0; 
+    padding: 10px; 
+    border-radius: 5px; 
+}
+
+.flashes .success {
+    background-color: #d4edda; 
+    color: #155724; 
+}
+
+.flashes .error {
+    background-color: #f8d7da; 
+    color: #721c24; 
+}
+
+/* Estilos para el formulario y los inputs de fecha */
+.date-filter {
+    display: flex;
+    gap: 10px;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.date-filter label {
+    font-size: 1em;
+    color: #000000;
+    margin-right: 10px;
+}
+
+.date-filter input[type="date"] {
+    background-color: #6F7271;
+    color: #ffffff;
+    border: 1px solid #BC955C;
+    border-radius: 0.3em;
+    padding: 5px;
+    height: 2.5em;
+}
+
+.date-filter input[type="date"]::placeholder {
+    color: #ffffff;
+    opacity: 0.7;
+}
+
+.date-filter input[type="date"]:focus {
+    outline: none;
+    border-color: #BC955C;
+    box-shadow: 0 0 5px #BC955C;
+}
+
+.date-filter button {
+    background-color: #BC955C;
+    color: #ffffff;
+    border: none;
+    border-radius: 5em;
+    padding: 8px 12px;
+    font-size: 0.9em;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.date-filter button:hover {
+    background-color: #9A7A4F;
+}

@@ -1,0 +1,12 @@
+.vs
+.env
+__pycache__
+venv
+venv/
+*.pyc
+.vscode/
+.vs/
+.DS_Store
+Thumbs.db
+/tmp/
+*.db

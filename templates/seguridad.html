@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Noticias Relevantes</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital@0;1&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <h1 class="title-newsnavigators">NewsNavigators</h1>
+        <img src="{{ url_for('static', filename='images/LogoGobernación.png') }}" alt="Escudo de Campeche" class="logo">
+    </header>
+
+    <nav class="navbar">
+        <ul class="nav-list">
+            <li><a href="{{ url_for('index') }}">INFORMACIÓN RELEVANTE</a></li>
+            <li><a href="{{ url_for('seguridad') }}">SEGURIDAD</a></li>
+            <li><a href="{{ url_for('gobierno_mexico') }}">GOBIERNO DE MÉXICO</a></li>
+            <li><a href="{{ url_for('genero_opinion') }}">GÉNEROS DE OPINIÓN</a></li>
+            {% if session.get('rol') == 'administrador' %}
+            <li><a href="{{ url_for('admin_dashboard') }}">PANEL ADMINISTRADOR</a></li>
+        {% endif %}
+            <li><a href="{{ url_for('logout') }}">CERRAR SESIÓN</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <h1 class="title-noticias">SEGURIDAD</h1>
+    
+        <div class="action-container">
+            <!-- Botón para ejecutar el scraping -->
+            <button id="scrape-button">Ejecutar búsqueda</button>
+    
+            <!-- Filtro por fecha y fuente -->
+            <!-- Cuadro de fecha -->
+            <div class="date-filter">
+                <form id="filter-form">
+                    <label for="start-date">Desde:</label>
+                    <input type="date" id="start-date" name="start-date" min="2024-11-12" max="{{ current_date }}">
+    
+                    <label for="end-date">Hasta:</label>
+                    <input type="date" id="end-date" name="end-date" min="2024-11-12" max="{{ current_date }}">
+
+                    <!-- Cuadro de fuente -->
+                    <label for="source-select">Fuente:</label>
+                    <select id="source-select" name="source">
+                        <option value="">Todas</option>
+                        <option value="static/images/logos/TelemarLogo.png">Telemar</option>
+                        <option value="static/images/logos/TribunaLogo.png">Tribuna</option>
+                        <option value="static/images/logos/NCSLogo.png">NCS</option>
+                    </select>
+    
+                    <!-- Botón de filtrar-->
+                    <button type="submit">Filtrar</button>
+                </form>
+            </div>
+        </div>
+    </div>    
+
+    <!-- Barra de progreso -->
+    <div class="loader" id="loader" style="display: none;">
+        <div class="loading-text">Cargando<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></div>
+        <div class="loading-bar-background">
+            <div class="loading-bar"></div>
+        </div>
+    </div>
+
+    <!-- Contenedor del resultado -->
+    <div id="result" style="display: none;"></div>
+
+    <!-- Tabla de noticias -->
+    <table id="news-table">
+        <thead>
+            <tr>
+                <th>Título</th>
+                <th>Descripción</th>
+                <th>Fecha</th>
+                <th>Link</th>
+                <th>Fuente</th>
+            </tr>
+        </thead>
+        <tbody id="news-table-body">
+            <!-- Aquí se agregarán las noticias -->
+        </tbody>
+    </table>
+
+    <!-- Enlace al archivo JavaScript -->
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

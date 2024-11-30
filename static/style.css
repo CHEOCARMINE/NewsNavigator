@@ -1,0 +1,370 @@
+/* Reinicio de estilos y configuración básica */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Noto Sans', sans-serif;
+    background-color: #ffffff;
+}
+
+/* Estilos del encabezado */
+.header {
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    padding: 5px;
+    flex-wrap: wrap; 
+}
+
+h1 {
+    font-size: 2.5rem;
+    flex: 1;  
+}
+
+.logo {
+    height: 60px; 
+    width: auto;
+    display: block;
+}
+
+.title-newsnavigators {
+    color: #BC955C;
+}
+
+.title-noticias {
+    color: #000000;
+    text-align: center;
+}
+
+/* Estilos de la barra de navegación */
+.navbar {
+    background-color: #621132; 
+    padding: 1rem;
+}
+
+.nav-list {
+    list-style: none;
+    display: flex;
+    justify-content: center; 
+    flex-wrap: wrap; 
+}
+
+.nav-list li {
+    margin: 0 15px;
+}
+
+.nav-list a {
+    text-decoration: none;
+    color: #ffffff;
+    font-size: 1.2rem; 
+    font-weight: bold;
+}
+
+.nav-list a:hover {
+    color: #BC955C; 
+    transition: color 0.3s ease;
+}
+
+
+/* Media Query para pantallas pequeñas */
+@media (max-width: 600px) {
+    .nav-list {
+        flex-direction: column; 
+        align-items: center; 
+    }
+    
+    .nav-list a {
+        font-size: 1.1rem; 
+        margin: 5px 0; 
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+
+    .action-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .date-filter {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    button {
+        width: 100%;
+    }
+}
+
+/* Estilos generales de la tabla */
+#news-table {
+    width: 100%; 
+    border-collapse: collapse; 
+    margin-top: 20px; 
+    text-align: left; 
+}
+
+/* Estilos para los encabezados de la tabla */
+#news-table th {
+    background-color: #621132; 
+    color: #ffffff; 
+    padding: 10px; 
+    border-bottom: 2px solid #ffffff;
+    font-family: 'Noto Sans', sans-serif; 
+}
+
+/* Estilos para las celdas de la tabla */
+#news-table td {
+    padding: 10px; 
+    border-bottom: 1px solid #ddd; 
+    color: #000000;
+    font-family: 'Noto Sans', sans-serif;
+    border: 3px solid #BC955C; 
+}
+
+/* Estilo alternativo para filas */
+#news-table tr:nth-child(even) {
+    background-color: #98989A;
+    border: 3px solid #BC955C; 
+}
+
+/* Estilo para los enlaces en la tabla */
+#news-table a {
+    color: #3498DB; 
+    text-decoration: none;
+    transition: color 0.3s ease; 
+}
+
+#news-table a:hover {
+    text-decoration: underline; 
+}
+
+#news-table img {
+    width: 50px;
+    height: auto;
+    max-width: 100%;
+}
+
+/* Estilos para el contenedor de acción */
+.action-container {
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    margin: 20px 0; 
+    gap: 20px;
+    flex-wrap: wrap; 
+}
+
+/* Estilos para los cuadros de selección de fecha */
+.date-filter {
+    display: flex;
+    gap: 10px;
+}
+
+.date-filter input[type="date"] {
+    background-color: #6F7271;
+    color: #ffffff;
+    border: 1px solid #BC955C;
+    border-radius: 0.3em;
+    padding: 5px;
+    height: 2.5em;
+}
+
+.date-filter input[type="date"]::placeholder {
+    color: #ffffff;
+    opacity: 0.7;
+}
+
+.date-filter input[type="date"]:focus {
+    outline: none;
+    border-color: #BC955C;
+    box-shadow: 0 0 5px #BC955C;
+}
+
+/* Estilo para los cuadroes de seleccion de fuente */
+.date-filter select {
+    background-color: #6F7271;
+    color: #ffffff;
+    border: 1px solid #BC955C;
+    border-radius: 0.3em;
+    padding: 5px;
+    height: 2.5em;
+}
+
+.date-filter select option {
+    color: #ffffff;
+    opacity: 0.7;
+}
+
+.date-filter select:focus {
+    outline: none;
+    border-color: #BC955C;
+    box-shadow: 0 0 5px #BC955C;
+}
+
+/* Estilos para los botones */
+button {
+    width: 7em; 
+    height: 2.5em; 
+    border-radius: 30em;
+    font-size: 0.875rem; 
+    font-family: inherit;
+    border: none;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    background-color: #621132;
+    color: #ffffff;
+    transition: background-color 0.3s ease;
+}
+
+button::before {
+    content: '';
+    width: 0;
+    height: 2.5em; 
+    border-radius: 30em;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-image: linear-gradient(to right, #BC955C 0%, #621132 100%);
+    transition: .5s ease;
+    display: block;
+    z-index: -1;
+}
+
+button:hover::before {
+    width: 7em; 
+}
+
+/* Estilos de la barra de carga */
+.loader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.loading-text {
+    color: rgb(0, 0, 0);
+    font-size: 14pt;
+    font-weight: 600;
+    margin-left: 10px;
+}
+
+.dot {
+    margin-left: 3px;
+    animation: blink 1.5s infinite;
+}
+
+.dot:nth-child(2) {
+    animation-delay: 0.3s;
+}
+
+.dot:nth-child(3) {
+    animation-delay: 0.6s;
+}
+
+.loading-bar-background {
+    --height: 20px; 
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    padding: 5px;
+    width: 150px; 
+    height: var(--height);
+    background-color: transparent; 
+    box-shadow: none; 
+    border-radius: calc(var(--height) / 2);
+}
+
+.loading-bar {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    --height: 20px;
+    width: 0%;
+    height: var(--height);
+    overflow: hidden;
+    background: linear-gradient(
+        0deg,
+        rgba(98, 17, 50, 1) 0%,
+        rgba(188, 149, 92, 1) 100%
+    );
+    border-radius: calc(var(--height) / 2);
+    animation: loading 4s ease-out infinite;
+}
+
+.white-bars-container {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.white-bar {
+    background: linear-gradient(
+        -45deg,
+        rgba(255, 255, 255, 1) 0%,
+        rgba(255, 255, 255, 0) 70%
+    );
+    width: 10px;
+    height: 45px;
+    opacity: 0.3;
+    rotate: 45deg;
+}
+
+@keyframes loading {
+    0% {
+        width: 0;
+    }
+    80% {
+        width: 100%;
+    }
+    100% {
+        width: 100%;
+    }
+}
+
+@keyframes blink {
+    0%,
+    100% {
+        opacity: 0;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+/* Estilos para el mensaje */
+#result {
+    padding: 5px; 
+    margin: 10px auto; 
+    border-radius: 3px; 
+    background-color: transparent; 
+    color: #333; 
+    font-size: 14px; 
+    text-align: center; 
+    max-width: 500px; 
+    box-shadow: none; 
+    transition: all 0.3s ease; 
+}
+
+/* Mensaje exitoso */
+#result.success {
+    background-color: #d4edda; 
+    color: #155724; 
+    border: 1px solid #c3e6cb; 
+}
+
+/* Mensaje de error */
+#result.error {
+    background-color: #f8d7da; 
+    color: #721c24; 
+    border: 1px solid #f5c6cb; 
+}
